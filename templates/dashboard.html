@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | PipelineX AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- ✅ Flask static folder reference -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="grid-bg"></div>
+
+    <!-- ✅ Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- ✅ Navbar with logout -->
+    <nav class="navbar">
+        <a href="{{ url_for('home') }}" class="logo" style="text-decoration: none;">PipelineX AI</a>
+        <div class="nav-links">
+            <span style="color: var(--text-dim); font-size: 14px;">👋 {{ name }}</span>
+            <a href="{{ url_for('logout') }}" style="color: #fca5a5;">Logout</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-wrapper">
+        <div class="dashboard-header">
+            <h1>Welcome back, {{ name }}!</h1>
+            <p>Select a module to begin your ML workflow.</p>
+        </div>
+
+        <div class="module-grid">
+            <div class="module-card">
+                <div class="icon">🧹</div>
+                <h3>Data Cleaning</h3>
+                <p>Automated duplicate removal, null handling, and structured data correction.</p>
+                <span class="badge">Coming Soon</span>
+            </div>
+            <div class="module-card">
+                <div class="icon">📊</div>
+                <h3>EDA Module</h3>
+                <p>Interactive visualizations, correlation heatmaps, and statistical summaries.</p>
+                <span class="badge">Coming Soon</span>
+            </div>
+            <div class="module-card">
+                <div class="icon">⚙️</div>
+                <h3>Auto-Preprocessing</h3>
+                <p>Feature scaling, label encoding, and missing value imputation.</p>
+                <span class="badge">Coming Soon</span>
+            </div>
+            <div class="module-card">
+                <div class="icon">🤖</div>
+                <h3>Model Training</h3>
+                <p>Train classification and regression models with auto hyperparameter tuning.</p>
+                <span class="badge">Coming Soon</span>
+            </div>
+            <div class="module-card">
+                <div class="icon">📈</div>
+                <h3>Model Evaluation</h3>
+                <p>View accuracy, confusion matrix, ROC curves, and performance metrics.</p>
+                <span class="badge">Coming Soon</span>
+            </div>
+            <div class="module-card">
+                <div class="icon">💾</div>
+                <h3>Model Export</h3>
+                <p>Save and download production-ready models in .pkl or .joblib format.</p>
+                <span class="badge">Coming Soon</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

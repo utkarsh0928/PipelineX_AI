@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PipelineX AI | Intelligent ML Automation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- ✅ Flask static folder reference -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="grid-bg"></div>
+
+    <!-- ✅ Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <nav class="navbar">
+        <a href="{{ url_for('home') }}" class="logo" style="text-decoration: none;">PipelineX AI</a>
+        <div class="nav-links">
+            <!-- ✅ Correct Flask route references -->
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}">Register</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-text">
+            <h1>Accelerate Your ML Workflow</h1>
+            <p>
+                Automate the complete machine learning lifecycle —
+                from data ingestion and preprocessing to model training,
+                evaluation, and export.
+            </p>
+            <div style="margin-top: 30px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <a href="{{ url_for('register') }}" class="btn primary-btn">Get Started</a>
+                <a href="{{ url_for('login') }}" class="btn secondary-btn">Sign In</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <h2>Core Modules</h2>
+        <div class="feature-grid">
+            <div class="card">
+                <h3>Data Cleaning</h3>
+                <p>Automated duplicate removal and structured data correction.</p>
+            </div>
+            <div class="card">
+                <h3>EDA Module</h3>
+                <p>Interactive visualizations and statistical summaries.</p>
+            </div>
+            <div class="card">
+                <h3>Auto-Preprocessing</h3>
+                <p>Feature scaling, encoding, and missing value handling.</p>
+            </div>
+            <div class="card">
+                <h3>Model Export</h3>
+                <p>Save and download production-ready models.</p>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | PipelineX AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- ✅ Flask static folder reference -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="grid-bg"></div>
+
+    <!-- ✅ Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="container float-anim">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div class="logo">PipelineX AI</div>
+            <p style="font-size: 12px; color: var(--text-dim); margin-top: 6px;">Industrial Training Project</p>
+        </div>
+
+        <h2 style="text-align: center; margin-bottom: 25px;">Welcome Back</h2>
+
+        <!-- ✅ POST to the correct /login route -->
+        <form action="{{ url_for('login') }}" method="POST">
+            <div class="input-group">
+                <input type="email" name="email" placeholder="Email Address" required>
+            </div>
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+            <button type="submit">Sign In</button>
+        </form>
+
+        <p style="margin-top: 20px; text-align: center; font-size: 13px;">
+            Don't have an account?
+            <a href="{{ url_for('register') }}" style="color: var(--primary); text-decoration: none;">Create Account</a>
+        </p>
+
+        <p style="margin-top: 10px; text-align: center; font-size: 13px;">
+            <a href="{{ url_for('home') }}" style="color: var(--text-dim); text-decoration: none;">← Back to Home</a>
+        </p>
+    </div>
+</body>
+</html>
