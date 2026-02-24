@@ -6,7 +6,7 @@
 
 ## 📸 Preview
 
-![PipelineX AI Homepage](https://via.placeholder.com/900x400/0f172a/38bdf8?text=PipelineX+AI)
+![PipelineX AI Homepage](/Homepage.png)
 
 ---
 
