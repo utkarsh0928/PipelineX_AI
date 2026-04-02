@@ -152,9 +152,9 @@ The project uses **SQLite** with SQLAlchemy ORM. The database file (`users.db`) 
 - [x] User Registration & Login
 - [x] Session Management & Flash Messages
 - [x] Protected Dashboard Route
-- [ ] CSV File Upload for Datasets
-- [ ] Data Cleaning Module
-- [ ] EDA Visualizations
+- [x] CSV File Upload for Datasets
+- [x] Data Cleaning Module
+- [x] EDA Visualizations
 - [ ] Auto-Preprocessing Pipeline
 - [ ] ML Model Training Interface
 - [ ] Model Evaluation Dashboard
