@@ -1,4 +1,3 @@
-
 import os
 import pandas as pd
 from flask import (Flask, render_template, request,
@@ -9,6 +8,10 @@ from werkzeug.utils import secure_filename
 from modules.data_loader import load_dataframe, allowed_file
 from modules.data_summary import get_summary
 from modules.eda import generate_visualizations
+from modules.cleaning import (handle_missing_values, get_missing_stats,
+                               detect_outliers, handle_outliers,
+                               remove_duplicates, fix_inconsistencies)
+
 
 # ── App config ───────────────────────────────────────────────
 app = Flask(__name__)
@@ -250,6 +253,55 @@ def eda():
     filename = session.get('filename', 'dataset')
     return render_template('eda.html', plots=plots, filename=filename)
 
+# =============================================================
+# MODULE 6, 7, 8 — Data Cleaning
+# =============================================================
+
+@app.route('/cleaning', methods=['GET', 'POST'])
+def cleaning():
+    """
+    Detects missing values and allows the user to fill them.
+    """
+    guard = login_required()
+    if guard:
+        return guard
+
+    df = get_df()
+    if df is None:
+        flash('Please upload a dataset first.', 'error')
+        return redirect(url_for('upload'))
+
+    if request.method == 'POST':
+        action   = request.form.get('action')
+        strategy = request.form.get('strategy', '')
+        try:
+            if action == 'impute':
+                df_cleaned = handle_missing_values(df, strategy=strategy)
+                set_df(df_cleaned)
+                flash(f'Missing values handled using "{strategy}" strategy.', 'success')
+            elif action == 'outliers':
+                df_cleaned = handle_outliers(df, strategy=strategy)
+                set_df(df_cleaned)
+                flash(f'Outliers handled using "{strategy}" strategy.', 'success')
+            elif action == 'duplicates':
+                df_cleaned = remove_duplicates(df)
+                set_df(df_cleaned)
+                flash('Duplicate rows removed.', 'success')
+            elif action == 'fix_inconsistent':
+                df_cleaned = fix_inconsistencies(df)
+                set_df(df_cleaned)
+                flash('Basic string inconsistencies fixed.', 'success')
+        except Exception as e:
+            flash(f'Error during cleaning: {e}', 'error')
+        return redirect(url_for('cleaning'))
+
+    missing_stats   = get_missing_stats(df)
+    outlier_stats   = detect_outliers(df)
+    duplicate_count = int(df.duplicated().sum())
+    return render_template('cleaning.html',
+                           missing_stats=missing_stats,
+                           outlier_stats=outlier_stats,
+                           duplicate_count=duplicate_count)
 
 # ── PLACEHOLDER routes (will be filled in future modules) ────
 
