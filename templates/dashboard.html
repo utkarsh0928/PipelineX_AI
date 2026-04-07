@@ -126,39 +126,38 @@
         </div>
       </div>
 
-      <!-- ── Pipeline Flow Bar ── -->
-      <div class="pipeline-flow">
-        <span class="step done">✅ Auth</span>
-        <span class="arrow">→</span>
-        <span class="step ready">📂 Upload</span>
-        <span class="arrow">→</span>
-        <span class="step ready">📋 Summary</span>
-        <span class="arrow">→</span>
-        <span class="step ready">📊 EDA</span>
-        <span class="arrow">→</span>
-        <span class="step ready">🧹 Cleaning</span>
-        <span class="arrow">→</span>
-        <span class="step">⚙️ Preprocessing</span>
-        <span class="arrow">→</span>
-        <span class="step">🤖 Training</span>
-        <span class="arrow">→</span>
-        <span class="step">💾 Export</span>
-      </div>
-
-      <!-- ── Module Grid ── -->
-      <div class="module-grid">
-        <!-- MODULE 2 & 3 — ACTIVE -->
-        <div class="module-card active">
-          <a href="{{ url_for('upload') }}">
-            <span class="icon">📂</span>
-            <h3>Upload Dataset</h3>
-            <p>
-              Upload your dataset in CSV, Excel, JSON, XML, or HTML format.
-              Supported up to 50 MB.
-            </p>
-            <span class="badge">▶ Start Here</span>
-          </a>
+        <!-- Pipeline flow indicator -->
+        <div class="pipeline-flow">
+            <span class="step done">✅ Auth</span>
+            <span class="arrow">→</span>
+            <span class="step ready">📂 Upload</span>
+            <span class="arrow">→</span>
+            <span class="step ready">📋 Summary</span>
+            <span class="arrow">→</span>
+            <span class="step ready">📊 EDA</span>
+            <span class="arrow">→</span>
+            <span class="step ready">🧹 Cleaning</span>
+            <span class="arrow">→</span>
+            <span class="step">⚙️ Preprocessing</span>
+            <span class="arrow">→</span>
+            <span class="step">🤖 Training</span>
+            <span class="arrow">→</span>
+            <span class="step">💾 Export</span>
         </div>
+
+        <p class="section-label" style="margin-bottom:16px">// pipeline_modules.py</p>
+
+        <div class="module-grid">
+
+            <!-- MODULE 2 & 3 — ACTIVE -->
+            <div class="module-card active">
+                <a href="{{ url_for('upload') }}">
+                    <span class="icon">📂</span>
+                    <h3>Upload Dataset</h3>
+                    <p>Upload your dataset in CSV, Excel, JSON, XML, or HTML format. Supported up to 50 MB.</p>
+                    <span class="badge">▶ Start Here</span>
+                </a>
+            </div>
 
         <!-- MODULE 4 — ACTIVE -->
         <div class="module-card active">
