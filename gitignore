@@ -1,8 +1,10 @@
-# ============================================
+# ============================================================
 #   PipelineX AI — .gitignore
-# ============================================
+#   Stack: Python · Flask · SQLAlchemy · Pandas · Matplotlib
+# ============================================================
 
-# --- Python ---
+
+# ── Python ───────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *$py.class
@@ -10,51 +12,67 @@ __pycache__/
 *.pyd
 .Python
 
-# --- Virtual Environment ---
+
+# ── Virtual Environment ───────────────────────────────────────
 venv/
 env/
 ENV/
 .venv/
 .env/
 
-# --- Flask / SQLite Database ---
+
+# ── Environment Variables & Secrets ──────────────────────────
+.env
+.env.local
+.env.production
+.env.staging
+*.env
+secrets.py
+
+
+# ── Flask / SQLite Database ───────────────────────────────────
+# Never commit the database — it contains real user passwords
 instance/
 *.db
 *.sqlite
 *.sqlite3
 
-# --- Environment Variables ---
-.env
-.env.local
-.env.production
-*.env
 
-# --- IDE & Editor Files ---
-.vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
-*.swp
-*.swo
-*~
+# ── User Uploaded Datasets ────────────────────────────────────
+# The uploads/ folder stores user files at runtime — never commit them
+uploads/
+*.csv
+*.xlsx
+*.xls
+*.json
+*.xml
 
-# --- OS Generated Files ---
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-Thumbs.db
-ehthumbs.db
-Desktop.ini
 
-# --- Logs ---
-*.log
-logs/
-pip-log.txt
-pip-delete-this-directory.txt
+# ── ML Artefacts (future modules) ────────────────────────────
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+*.pt
+*.pth
+models/
+checkpoints/
 
-# --- Distribution / Packaging ---
+
+# ── Matplotlib / Plot Cache ───────────────────────────────────
+*.png
+*.jpg
+*.jpeg
+*.svg
+plots/
+
+
+# ── Jupyter Notebooks ─────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+
+# ── Distribution / Packaging ─────────────────────────────────
 dist/
 build/
 *.egg-info/
@@ -64,7 +82,8 @@ wheels/
 *.whl
 MANIFEST
 
-# --- Testing ---
+
+# ── Testing & Coverage ───────────────────────────────────────
 .pytest_cache/
 .coverage
 htmlcov/
@@ -73,29 +92,41 @@ nosetests.xml
 coverage.xml
 *.cover
 
-# --- Jupyter Notebooks ---
-.ipynb_checkpoints/
-*.ipynb
 
-# --- Machine Learning / Data Files ---
-*.pkl
-*.joblib
-*.h5
-*.hdf5
-*.csv
-*.xlsx
-*.json
-uploads/
-models/
-data/
+# ── IDE & Editor Files ────────────────────────────────────────
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
 
-# --- MyPy / Type Checking ---
+
+# ── OS Generated Files ────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+
+# ── Logs ─────────────────────────────────────────────────────
+*.log
+logs/
+pip-log.txt
+
+
+# ── MyPy / Type Checking ─────────────────────────────────────
 .mypy_cache/
 .dmypy.json
 dmypy.json
 
-# --- Misc ---
+
+# ── Misc ─────────────────────────────────────────────────────
 *.bak
 *.tmp
 *.temp
-Homepage.png
