@@ -75,11 +75,12 @@ def generate_visualizations(df: pd.DataFrame) -> dict:
             counts = df[col].value_counts().head(10)
             sns.barplot(x=counts.index, y=counts.values, palette="mako",ax=ax)
 
-            ax.plt.title(f'Counts of {col} (Top 10)', color='#00d2ff', fontweight='bold')
-            ax.plt.xticks(rotation=90,ha='right',fontsize=7.5)
-            ax.plt.grid(alpha=0.2, axis='y')
-
+            ax.set_title(f'Counts of {col} (Top 10)', color='#00d2ff', fontweight='bold')
+            ax.set_xticklabels(ax.get_xticklabels(), rotation=90, ha='right', fontsize=7.5)
+            ax.tick_params(axis='x', pad=4)
+            ax.grid(alpha=0.2, axis='y')
         plt.tight_layout(pad=2.0,h_pad=4.0)
+        plt.subplots_adjust(bottom=0.25)
         plots['bar_charts'] = get_base64_plot()
 
     # 3. ── Correlation Heatmap ──────────────────────────

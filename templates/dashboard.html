@@ -200,62 +200,72 @@
           </a>
         </div>
 
-        <!-- COMING SOON -->
-        <div class="module-card">
-          <span class="icon">⚙️</span>
-          <h3>Auto-Preprocessing</h3>
-          <p>
-            Feature scaling, label encoding, and intelligent missing value
-            imputation pipelines.
-          </p>
-          <span class="badge">Coming Soon</span>
+        <!-- MODULE 9 — ACTIVE -->
+        <div class="module-card active">
+          <a href="{{ url_for('feature_engineering') }}">
+            <span class="icon">⚙️</span>
+            <h3>Feature Engineering</h3>
+            <p>
+              Label encoding for categorical columns and Standard Scaling
+              (Mean=0, Std=1) for numeric features.
+            </p>
+            <span class="badge">▶ Live</span>
+          </a>
         </div>
 
-        <div class="module-card">
-          <span class="icon">🤖</span>
-          <h3>Model Training</h3>
-          <p>
-            Train classification and regression models with auto hyperparameter
-            tuning via GridSearch.
-          </p>
-          <span class="badge">Coming Soon</span>
+        <!-- MODULE 10, 11 — ACTIVE -->
+        <div class="module-card active">
+          <a href="{{ url_for('model') }}">
+            <span class="icon">🎯</span>
+            <h3>Problem &amp; Algorithm</h3>
+            <p>
+              Select Classification, Regression, or Clustering — then pick the
+              algorithm to train.
+            </p>
+            <span class="badge">▶ Live</span>
+          </a>
         </div>
 
-        <div class="module-card">
-          <span class="icon">📈</span>
-          <h3>Model Evaluation</h3>
-          <p>
-            Accuracy scores, confusion matrices, ROC curves, and comprehensive
-            performance dashboards.
-          </p>
-          <span class="badge">Coming Soon</span>
+        <!-- MODULE 12, 13 — ACTIVE -->
+        <div class="module-card active">
+          <a href="{{ url_for('train_model') }}">
+            <span class="icon">🤖</span>
+            <h3>Train &amp; Evaluate</h3>
+            <p>
+              Train with scikit-learn (80/20 split) and view accuracy, R², RMSE,
+              or Silhouette metrics.
+            </p>
+            <span class="badge">▶ Live</span>
+          </a>
         </div>
 
-        <div class="module-card">
-          <span class="icon">💾</span>
-          <h3>Model Export</h3>
-          <p>
-            Save and download production-ready models in
-            <code
-              style="
-                color: var(--primary);
-                font-family: var(--font-mono);
-                font-size: 11px;
-              "
-              >.pkl</code
-            >
-            or
-            <code
-              style="
-                color: var(--primary);
-                font-family: var(--font-mono);
-                font-size: 11px;
-              "
-              >.joblib</code
-            >
-            format instantly.
-          </p>
-          <span class="badge">Coming Soon</span>
+        <!-- MODULE 14 — ACTIVE -->
+        <div class="module-card active">
+          <a href="{{ url_for('export_model') }}">
+            <span class="icon">💾</span>
+            <h3>Model Export</h3>
+            <p>
+              Download your trained model as a
+              <code
+                style="
+                  color: var(--primary);
+                  font-family: var(--font-mono);
+                  font-size: 11px;
+                "
+                >.pkl</code
+              >
+              file via
+              <code
+                style="
+                  color: var(--primary);
+                  font-family: var(--font-mono);
+                  font-size: 11px;
+                "
+                >joblib.dump()</code
+              >.
+            </p>
+            <span class="badge">▶ Live</span>
+          </a>
         </div>
       </div>
       <!-- end module-grid -->
