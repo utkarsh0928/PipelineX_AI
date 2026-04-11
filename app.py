@@ -11,7 +11,11 @@ from modules.eda import generate_visualizations
 from modules.cleaning import (handle_missing_values, get_missing_stats,
                                detect_outliers, handle_outliers,
                                remove_duplicates, fix_inconsistencies)
-
+from modules.feature_engineering import (apply_label_encoding,
+                                          apply_standard_scaling, get_feature_info)
+from modules.model_training import train_model_logic
+import joblib
+from flask import send_from_directory
 
 # ── App config ───────────────────────────────────────────────
 app = Flask(__name__)
@@ -303,7 +307,166 @@ def cleaning():
                            outlier_stats=outlier_stats,
                            duplicate_count=duplicate_count)
 
-# ── PLACEHOLDER routes (will be filled in future modules) ────
+# =============================================================
+# MODULE 9 — Feature Engineering
+# =============================================================
+
+@app.route('/feature_engineering', methods=['GET', 'POST'])
+def feature_engineering():
+    """
+    Transforms categorical strings to numbers and scales numeric features.
+    """
+    guard = login_required()
+    if guard:
+        return guard
+
+    df = get_df()
+    if df is None:
+        flash('Please upload a dataset first.', 'error')
+        return redirect(url_for('upload'))
+
+    if request.method == 'POST':
+        action        = request.form.get('action')
+        selected_cols = request.form.getlist('cols')
+
+        if not selected_cols:
+            flash('Please select at least one column.', 'error')
+            return redirect(url_for('feature_engineering'))
+
+        try:
+            if action == 'label_encode':
+                df_new = apply_label_encoding(df, selected_cols)
+                set_df(df_new)
+                flash(f'Label encoded: {", ".join(selected_cols)}', 'success')
+            elif action == 'scale':
+                df_new = apply_standard_scaling(df, selected_cols)
+                set_df(df_new)
+                flash(f'Scaled: {", ".join(selected_cols)}', 'success')
+        except Exception as e:
+            flash(f'Error during feature engineering: {e}', 'error')
+        return redirect(url_for('feature_engineering'))
+
+    feature_info = get_feature_info(df)
+    return render_template('feature_engineering.html', features=feature_info)
+
+
+# ── MODULE 10 — ML Problem Selection ──────────────────────────
+
+@app.route('/model', methods=['GET', 'POST'])
+def model():
+    guard = login_required()
+    if guard:
+        return guard
+
+    df = get_df()
+    if df is None:
+        flash('Please upload a dataset first.', 'error')
+        return redirect(url_for('upload'))
+
+    if request.method == 'POST':
+        problem_type = request.form.get('problem_type')
+        target_col   = request.form.get('target_col', '')
+
+        if not problem_type:
+            flash('Please select a problem type.', 'error')
+            return redirect(url_for('model'))
+
+        if problem_type in ('classification', 'regression') and not target_col:
+            flash(f'Prediction for "{problem_type}" requires a Target Column.', 'error')
+            return redirect(url_for('model'))
+
+        session['problem_type'] = problem_type
+        session['target_col']   = target_col
+        flash(f'Problem Type: {problem_type.capitalize()} selected.', 'success')
+        return redirect(url_for('algorithm_selection'))
+
+    columns = list(df.columns)
+    return render_template('model.html', columns=columns)
+
+
+# ── MODULE 11 — Algorithm Selection ───────────────────────────
+
+@app.route('/algorithm_selection', methods=['GET', 'POST'])
+def algorithm_selection():
+    guard = login_required()
+    if guard:
+        return guard
+
+    problem_type = session.get('problem_type')
+    if not problem_type:
+        flash('Please select a problem type first.', 'error')
+        return redirect(url_for('model'))
+
+    if request.method == 'POST':
+        algorithm = request.form.get('algorithm')
+
+        if not algorithm:
+            flash('Please select an algorithm.', 'error')
+            return redirect(url_for('algorithm_selection'))
+
+        session['algorithm'] = algorithm
+        flash(f'Algorithm: {algorithm.replace("_", " ").capitalize()} selected.', 'success')
+        return redirect(url_for('train_model'))
+
+    return render_template('algorithm.html', problem_type=problem_type)
+
+
+# ── MODULE 12 & 13 — Model Training & Evaluation ──────────────
+
+@app.route('/train_model')
+def train_model():
+    guard = login_required()
+    if guard:
+        return guard
+
+    df           = get_df()
+    problem_type = session.get('problem_type')
+    algorithm    = session.get('algorithm')
+    target_col   = session.get('target_col')
+
+    if df is None or not algorithm:
+        flash('Data or Algorithm missing. Please restart the process.', 'error')
+        return redirect(url_for('upload'))
+
+    try:
+        model_obj, metrics, X_test, y_test = train_model_logic(df, problem_type,
+                                                                algorithm, target_col)
+        _store['trained_model'] = model_obj
+        return render_template('result.html',
+                               metrics=metrics,
+                               algorithm=algorithm,
+                               problem_type=problem_type)
+    except Exception as e:
+        flash(f'Error during training: {e}', 'error')
+        return redirect(url_for('algorithm_selection'))
+
+
+# ── MODULE 14 — Model Export ───────────────────────────────────
+
+@app.route('/export_model')
+def export_model():
+    guard = login_required()
+    if guard:
+        return guard
+
+    model_obj = _store.get('trained_model')
+    algorithm = session.get('algorithm', 'model')
+
+    if model_obj is None:
+        flash('No trained model found to export.', 'error')
+        return redirect(url_for('train_model'))
+
+    try:
+        models_dir = os.path.join(os.path.dirname(__file__), 'models')
+        os.makedirs(models_dir, exist_ok=True)
+        filename = f"{algorithm}_trained.pkl"
+        filepath = os.path.join(models_dir, filename)
+        joblib.dump(model_obj, filepath)
+        return send_from_directory(directory=models_dir, path=filename,
+                                   as_attachment=True)
+    except Exception as e:
+        flash(f'Error exporting model: {e}', 'error')
+        return redirect(url_for('train_model'))
 
 # ── Run ──────────────────────────────────────────────────────
 if __name__ == '__main__':
