@@ -107,6 +107,8 @@
         <a href="{{ url_for('summary') }}">Summary</a>
         <a href="{{ url_for('eda') }}">EDA</a>
         <a href="{{ url_for('cleaning') }}">Cleaning</a>
+        <a href="{{ url_for('feature_engineering') }}">Features</a>
+        <a href="{{ url_for('model') }}">Model</a>
         <span class="nav-user">👤 {{ name }}</span>
         <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
       </div>
@@ -126,37 +128,38 @@
         </div>
       </div>
 
-        <!-- Pipeline flow indicator -->
-        <div class="pipeline-flow">
-            <span class="step done">✅ Auth</span>
-            <span class="arrow">→</span>
-            <span class="step ready">📂 Upload</span>
-            <span class="arrow">→</span>
-            <span class="step ready">📋 Summary</span>
-            <span class="arrow">→</span>
-            <span class="step ready">📊 EDA</span>
-            <span class="arrow">→</span>
-            <span class="step ready">🧹 Cleaning</span>
-            <span class="arrow">→</span>
-            <span class="step">⚙️ Preprocessing</span>
-            <span class="arrow">→</span>
-            <span class="step">🤖 Training</span>
-            <span class="arrow">→</span>
-            <span class="step">💾 Export</span>
+      <!-- Pipeline flow indicator -->
+      <div class="pipeline-flow">
+        <span class="step done">✅ Auth</span>
+        <span class="arrow">→</span>
+        <span class="step ready">📂 Upload</span>
+        <span class="arrow">→</span>
+        <span class="step ready">📋 Summary</span>
+        <span class="arrow">→</span>
+        <span class="step ready">📊 EDA</span>
+        <span class="arrow">→</span>
+        <span class="step ready">🧹 Cleaning</span>
+        <span class="arrow">→</span>
+        <span class="step ready">⚙️ Preprocessing</span>
+        <span class="arrow">→</span>
+        <span class="step ready">🤖 Training</span>
+        <span class="arrow">→</span>
+        <span class="step ready">💾 Export</span>
+      </div>
+
+      <div class="module-grid">
+        <!-- MODULE 2 & 3 — ACTIVE -->
+        <div class="module-card active">
+          <a href="{{ url_for('upload') }}">
+            <span class="icon">📂</span>
+            <h3>Upload Dataset</h3>
+            <p>
+              Upload your dataset in CSV, Excel, JSON, XML, or HTML format.
+              Supported up to 50 MB.
+            </p>
+            <span class="badge">▶ Start Here</span>
+          </a>
         </div>
-
-
-        <div class="module-grid">
-
-            <!-- MODULE 2 & 3 — ACTIVE -->
-            <div class="module-card active">
-                <a href="{{ url_for('upload') }}">
-                    <span class="icon">📂</span>
-                    <h3>Upload Dataset</h3>
-                    <p>Upload your dataset in CSV, Excel, JSON, XML, or HTML format. Supported up to 50 MB.</p>
-                    <span class="badge">▶ Start Here</span>
-                </a>
-            </div>
 
         <!-- MODULE 4 — ACTIVE -->
         <div class="module-card active">
