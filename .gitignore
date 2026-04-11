@@ -130,3 +130,5 @@ dmypy.json
 *.bak
 *.tmp
 *.temp
+__pycache__/ 
+*.pyc 
