@@ -67,19 +67,19 @@ def generate_visualizations(df: pd.DataFrame) -> dict:
         n = len(cols_to_plot)
         rows = (n + 1) // 2
 
-        plt.figure(figsize=(12, 4 * rows))
+        plt.figure(figsize=(14, 7 * rows))
 
         for i, col in enumerate(cols_to_plot):
-            plt.subplot(rows, 2, i + 1)
+            ax=plt.subplot(rows, 2, i + 1)
 
             counts = df[col].value_counts().head(10)
-            sns.barplot(x=counts.index, y=counts.values, palette="mako")
+            sns.barplot(x=counts.index, y=counts.values, palette="mako",ax=ax)
 
-            plt.title(f'Counts of {col} (Top 10)', color='#00d2ff', fontweight='bold')
-            plt.xticks(rotation=45)
-            plt.grid(alpha=0.2, axis='y')
+            ax.plt.title(f'Counts of {col} (Top 10)', color='#00d2ff', fontweight='bold')
+            ax.plt.xticks(rotation=90,ha='right',fontsize=7.5)
+            ax.plt.grid(alpha=0.2, axis='y')
 
-        plt.tight_layout()
+        plt.tight_layout(pad=2.0,h_pad=4.0)
         plots['bar_charts'] = get_base64_plot()
 
     # 3. ── Correlation Heatmap ──────────────────────────
