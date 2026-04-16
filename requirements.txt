@@ -1,12 +1,29 @@
-flask
-flask-sqlalchemy
-werkzeug
-pandas
-numpy
-matplotlib
-seaborn
-scikit-learn
-joblib
-openpyxl
-xlrd
-lxml
+# ============================================================
+#   PipelineX AI — requirements.txt
+#   Install with: pip install -r requirements.txt
+# ============================================================
+
+# ── Web Framework ────────────────────────────────────────────
+Flask==3.1.1
+Werkzeug==3.1.3
+
+# ── Database (ORM) ───────────────────────────────────────────
+Flask-SQLAlchemy==3.1.1
+SQLAlchemy==2.0.41
+
+# ── Data Handling ────────────────────────────────────────────
+pandas==2.2.3
+numpy==2.2.6
+
+# ── Machine Learning ─────────────────────────────────────────
+scikit-learn==1.6.1
+joblib==1.5.0
+
+# ── Data Visualisation (EDA Module) ──────────────────────────
+matplotlib==3.10.3
+seaborn==0.13.2
+
+# ── File Format Support (data_loader.py) ─────────────────────
+openpyxl==3.1.5       # .xlsx support  → pd.read_excel()
+xlrd==2.0.1           # .xls  support  → pd.read_excel()
+lxml==5.4.0           # .xml  support  → pd.read_xml()
