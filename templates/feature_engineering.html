@@ -1,193 +1,541 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Feature Engineering | PipelineX AI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
     <style>
-        .page-wrapper { min-height:100vh; padding:100px 6% 60px; }
-        .page-header  { margin-bottom:36px; }
-        .page-header h1 { font-size:28px; font-weight:700; letter-spacing:-0.5px; background:linear-gradient(135deg,#fff 0%,var(--primary) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-        .page-header p  { color:var(--text-dim); font-size:13px; font-family:var(--font-mono); margin-top:4px; }
+      .page-wrapper {
+        min-height: 100vh;
+        padding: 100px 6% 60px;
+      }
+      .page-header {
+        margin-bottom: 36px;
+      }
+      .page-header h1 {
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .page-header p {
+        color: var(--text-dim);
+        font-size: 13px;
+        font-family: var(--font-mono);
+        margin-top: 4px;
+      }
 
-        .section-title { font-size:15px; font-weight:600; color:var(--text-bright); margin:32px 0 16px; display:flex; align-items:center; gap:10px; }
-        .section-title::after { content:''; flex:1; height:1px; background:rgba(0,229,255,0.1); }
-        .section-title .stag { font-family:var(--font-mono); font-size:11px; color:var(--primary); background:rgba(0,229,255,0.08); border:1px solid rgba(0,229,255,0.2); padding:2px 10px; border-radius:6px; }
+      .section-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text-bright);
+        margin: 32px 0 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .section-title::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: rgba(0, 229, 255, 0.1);
+      }
+      .section-title .stag {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--primary);
+        background: rgba(0, 229, 255, 0.08);
+        border: 1px solid rgba(0, 229, 255, 0.2);
+        padding: 2px 10px;
+        border-radius: 6px;
+      }
 
-        .fe-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
-        @media(max-width:800px){ .fe-grid { grid-template-columns:1fr; } }
-
-        .fe-card {
-            padding:28px; border-radius:16px;
-            background:rgba(8,12,26,0.8); border:1px solid rgba(0,229,255,0.1);
-            backdrop-filter:blur(16px); position:relative; overflow:hidden;
-            transition: border-color 0.3s, box-shadow 0.3s;
+      .fe-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+      @media (max-width: 800px) {
+        .fe-grid {
+          grid-template-columns: 1fr;
         }
-        .fe-card::before {
-            content:''; position:absolute; top:0; left:0; right:0; height:2px;
-            background:linear-gradient(90deg, var(--secondary), var(--primary));
-            transform:scaleX(0); transform-origin:left; transition:transform 0.35s;
-        }
-        .fe-card:hover { border-color:rgba(0,229,255,0.25); box-shadow:0 8px 30px rgba(0,0,0,0.4); }
-        .fe-card:hover::before { transform:scaleX(1); }
-        .fe-card .fc-icon  { font-size:26px; margin-bottom:12px; display:block; }
-        .fe-card .fc-title { font-size:16px; font-weight:600; color:var(--text-bright); margin-bottom:6px; }
-        .fe-card .fc-desc  { font-size:13px; color:var(--text-dim); line-height:1.6; margin-bottom:20px; }
+      }
 
-        /* Column checkboxes */
-        .col-list { display:flex; flex-direction:column; gap:8px; margin-bottom:20px; max-height:220px; overflow-y:auto; padding-right:4px; }
-        .col-list::-webkit-scrollbar { width:4px; }
-        .col-list::-webkit-scrollbar-track { background:rgba(255,255,255,0.03); border-radius:2px; }
-        .col-list::-webkit-scrollbar-thumb { background:rgba(0,229,255,0.2); border-radius:2px; }
+      .fe-card {
+        padding: 28px;
+        border-radius: 16px;
+        background: rgba(8, 12, 26, 0.8);
+        border: 1px solid rgba(0, 229, 255, 0.1);
+        backdrop-filter: blur(16px);
+        position: relative;
+        overflow: hidden;
+        transition:
+          border-color 0.3s,
+          box-shadow 0.3s;
+      }
+      .fe-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--secondary), var(--primary));
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.35s;
+      }
+      .fe-card:hover {
+        border-color: rgba(0, 229, 255, 0.25);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      }
+      .fe-card:hover::before {
+        transform: scaleX(1);
+      }
+      .fe-card .fc-icon {
+        font-size: 26px;
+        margin-bottom: 12px;
+        display: block;
+      }
+      .fe-card .fc-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-bright);
+        margin-bottom: 6px;
+      }
+      .fe-card .fc-desc {
+        font-size: 13px;
+        color: var(--text-dim);
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
 
-        .col-item { display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; background:rgba(0,229,255,0.03); border:1px solid rgba(0,229,255,0.07); cursor:pointer; transition:all 0.2s; }
-        .col-item:hover { background:rgba(0,229,255,0.07); border-color:rgba(0,229,255,0.18); }
-        .col-item input[type="checkbox"] { accent-color:var(--primary); width:14px; height:14px; cursor:pointer; flex-shrink:0; }
-        .col-item label { font-family:var(--font-mono); font-size:12px; color:var(--text-main); cursor:pointer; flex:1; }
-        .col-item .dtype-tag { font-family:var(--font-mono); font-size:10px; color:#a78bfa; background:rgba(124,58,237,0.12); border:1px solid rgba(124,58,237,0.2); padding:1px 7px; border-radius:4px; white-space:nowrap; }
+      /* Column checkboxes */
+      .col-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 20px;
+        max-height: 220px;
+        overflow-y: auto;
+        padding-right: 4px;
+      }
+      .col-list::-webkit-scrollbar {
+        width: 4px;
+      }
+      .col-list::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 2px;
+      }
+      .col-list::-webkit-scrollbar-thumb {
+        background: rgba(0, 229, 255, 0.2);
+        border-radius: 2px;
+      }
 
-        .no-cols { padding:16px; text-align:center; font-family:var(--font-mono); font-size:12px; color:var(--text-dim); border:1px dashed rgba(0,229,255,0.12); border-radius:8px; }
+      .col-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: rgba(0, 229, 255, 0.03);
+        border: 1px solid rgba(0, 229, 255, 0.07);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .col-item:hover {
+        background: rgba(0, 229, 255, 0.07);
+        border-color: rgba(0, 229, 255, 0.18);
+      }
+      .col-item input[type="checkbox"] {
+        accent-color: var(--primary);
+        width: 14px;
+        height: 14px;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+      .col-item label {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--text-main);
+        cursor: pointer;
+        flex: 1;
+      }
+      .col-item .dtype-tag {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: #a78bfa;
+        background: rgba(124, 58, 237, 0.12);
+        border: 1px solid rgba(124, 58, 237, 0.2);
+        padding: 1px 7px;
+        border-radius: 4px;
+        white-space: nowrap;
+      }
 
-        /* Select-all row */
-        .select-all-row { display:flex; align-items:center; gap:8px; margin-bottom:10px; font-family:var(--font-mono); font-size:12px; color:var(--text-dim); }
-        .select-all-row input { accent-color:var(--primary); cursor:pointer; }
+      .no-cols {
+        padding: 16px;
+        text-align: center;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--text-dim);
+        border: 1px dashed rgba(0, 229, 255, 0.12);
+        border-radius: 8px;
+      }
 
-        /* Buttons */
-        .fe-btn {
-            width:100%; padding:12px; border-radius:10px; border:none; cursor:pointer;
-            font-family:var(--font-main); font-size:14px; font-weight:600;
-            display:flex; align-items:center; justify-content:center; gap:8px;
-            transition:all 0.25s ease;
-        }
-        .fe-btn-primary { background:linear-gradient(135deg,#0ea5e9,#00e5ff); color:#04050f; box-shadow:0 4px 16px rgba(0,229,255,0.2); }
-        .fe-btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,229,255,0.35); }
-        .fe-btn-purple { background:linear-gradient(135deg,#7c3aed,#a855f7); color:#fff; box-shadow:0 4px 16px rgba(124,58,237,0.2); }
-        .fe-btn-purple:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(124,58,237,0.35); }
+      /* Select-all row */
+      .select-all-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--text-dim);
+      }
+      .select-all-row input {
+        accent-color: var(--primary);
+        cursor: pointer;
+      }
 
-        .action-row { display:flex; gap:12px; flex-wrap:wrap; margin-top:36px; }
+      /* Buttons */
+      .fe-btn {
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-family: var(--font-main);
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.25s ease;
+      }
+      .fe-btn-primary {
+        background: linear-gradient(135deg, #0ea5e9, #00e5ff);
+        color: #04050f;
+        box-shadow: 0 4px 16px rgba(0, 229, 255, 0.2);
+      }
+      .fe-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 229, 255, 0.35);
+      }
+      .fe-btn-purple {
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        color: #fff;
+        box-shadow: 0 4px 16px rgba(124, 58, 237, 0.2);
+      }
+      .fe-btn-purple:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
+      }
+
+      .action-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 36px;
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <div class="bg-base"></div>
     <div class="bg-dots"></div>
     <div class="bg-scanlines"></div>
     <canvas id="neural-canvas"></canvas>
     <div class="ml-tags" id="ml-tags"></div>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flash-messages">
-                {% for category, message in messages %}
-                    <div class="flash {{ category }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
 
     <nav class="navbar">
-        <a href="{{ url_for('home') }}" class="logo">PipelineX AI</a>
-        <div class="nav-links">
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('cleaning') }}">Cleaning</a>
-            <a href="{{ url_for('model') }}">Model →</a>
-            <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
-        </div>
+      <a href="{{ url_for('home') }}" class="logo">PipelineX AI</a>
+      <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('cleaning') }}">Cleaning</a>
+        <a href="{{ url_for('model') }}">Model →</a>
+        <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+      </div>
     </nav>
 
     <div class="page-wrapper">
-        <div class="page-header">
-            <p class="section-label">// MODULE 9 — FEATURE ENGINEERING</p>
-            <h1>Feature Engineering</h1>
-            <p>apply_label_encoding() &nbsp;·&nbsp; apply_standard_scaling() &nbsp;·&nbsp; get_feature_info()</p>
+      <div class="page-header">
+        <h1>Feature Engineering</h1>
+        <p>
+          apply_label_encoding() &nbsp;·&nbsp; apply_standard_scaling()
+          &nbsp;·&nbsp; get_feature_info()
+        </p>
+      </div>
+
+      <div class="fe-grid">
+        <!-- ── Label Encoding ── -->
+        <div class="fe-card">
+          <span class="fc-icon">🏷️</span>
+          <div class="fc-title">Label Encoding</div>
+          <div class="fc-desc">
+            Converts categorical string columns to integers using
+            <span
+              style="
+                font-family: var(--font-mono);
+                color: var(--primary);
+                font-size: 12px;
+              "
+              >LabelEncoder()</span
+            >. Select the
+            <strong style="color: var(--text-bright)">categorical</strong>
+            columns to encode.
+          </div>
+          <form
+            method="POST"
+            action="{{ url_for('feature_engineering') }}"
+            id="encode-form"
+          >
+            <input type="hidden" name="action" value="label_encode" />
+            {% if features.categorical %}
+            <div class="select-all-row">
+              <input
+                type="checkbox"
+                id="enc-all"
+                onchange="toggleAll('encode-form', this.checked)"
+              />
+              <label for="enc-all">Select all</label>
+            </div>
+            <div class="col-list">
+              {% for col in features.categorical %}
+              <div class="col-item">
+                <input
+                  type="checkbox"
+                  name="cols"
+                  value="{{ col }}"
+                  id="enc-{{ loop.index }}"
+                />
+                <label for="enc-{{ loop.index }}">{{ col }}</label>
+                <span class="dtype-tag">categorical</span>
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-cols">✓ No categorical columns found.</div>
+            {% endif %}
+            <button
+              type="submit"
+              class="fe-btn fe-btn-primary"
+              {%
+              if
+              not
+              features.categorical
+              %}disabled
+              style="opacity: 0.5; cursor: not-allowed"
+              {%
+              endif
+              %}
+            >
+              🏷️ Apply Label Encoding
+            </button>
+          </form>
         </div>
 
-        <div class="fe-grid">
-
-            <!-- ── Label Encoding ── -->
-            <div class="fe-card">
-                <span class="fc-icon">🏷️</span>
-                <div class="fc-title">Label Encoding</div>
-                <div class="fc-desc">
-                    Converts categorical string columns to integers using <span style="font-family:var(--font-mono);color:var(--primary);font-size:12px">LabelEncoder()</span>.
-                    Select the <strong style="color:var(--text-bright)">categorical</strong> columns to encode.
-                </div>
-                <form method="POST" action="{{ url_for('feature_engineering') }}" id="encode-form">
-                    <input type="hidden" name="action" value="label_encode">
-                    {% if features.categorical %}
-                        <div class="select-all-row">
-                            <input type="checkbox" id="enc-all" onchange="toggleAll('encode-form', this.checked)">
-                            <label for="enc-all">Select all</label>
-                        </div>
-                        <div class="col-list">
-                            {% for col in features.categorical %}
-                            <div class="col-item">
-                                <input type="checkbox" name="cols" value="{{ col }}" id="enc-{{ loop.index }}">
-                                <label for="enc-{{ loop.index }}">{{ col }}</label>
-                                <span class="dtype-tag">categorical</span>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="no-cols">✓ No categorical columns found.</div>
-                    {% endif %}
-                    <button type="submit" class="fe-btn fe-btn-primary" {% if not features.categorical %}disabled style="opacity:0.5;cursor:not-allowed"{% endif %}>
-                        🏷️ Apply Label Encoding
-                    </button>
-                </form>
+        <!-- ── Standard Scaling ── -->
+        <div class="fe-card">
+          <span class="fc-icon">📐</span>
+          <div class="fc-title">Standard Scaling</div>
+          <div class="fc-desc">
+            Normalises numeric columns to Mean=0, Std=1 using
+            <span
+              style="
+                font-family: var(--font-mono);
+                color: var(--primary);
+                font-size: 12px;
+              "
+              >StandardScaler()</span
+            >. Select the
+            <strong style="color: var(--text-bright)">numeric</strong> columns
+            to scale.
+          </div>
+          <form
+            method="POST"
+            action="{{ url_for('feature_engineering') }}"
+            id="scale-form"
+          >
+            <input type="hidden" name="action" value="scale" />
+            {% if features.numeric %}
+            <div class="select-all-row">
+              <input
+                type="checkbox"
+                id="sc-all"
+                onchange="toggleAll('scale-form', this.checked)"
+              />
+              <label for="sc-all">Select all</label>
             </div>
-
-            <!-- ── Standard Scaling ── -->
-            <div class="fe-card">
-                <span class="fc-icon">📐</span>
-                <div class="fc-title">Standard Scaling</div>
-                <div class="fc-desc">
-                    Normalises numeric columns to Mean=0, Std=1 using <span style="font-family:var(--font-mono);color:var(--primary);font-size:12px">StandardScaler()</span>.
-                    Select the <strong style="color:var(--text-bright)">numeric</strong> columns to scale.
-                </div>
-                <form method="POST" action="{{ url_for('feature_engineering') }}" id="scale-form">
-                    <input type="hidden" name="action" value="scale">
-                    {% if features.numeric %}
-                        <div class="select-all-row">
-                            <input type="checkbox" id="sc-all" onchange="toggleAll('scale-form', this.checked)">
-                            <label for="sc-all">Select all</label>
-                        </div>
-                        <div class="col-list">
-                            {% for col in features.numeric %}
-                            <div class="col-item">
-                                <input type="checkbox" name="cols" value="{{ col }}" id="sc-{{ loop.index }}">
-                                <label for="sc-{{ loop.index }}">{{ col }}</label>
-                                <span class="dtype-tag" style="color:var(--primary);background:rgba(0,229,255,0.08);border-color:rgba(0,229,255,0.2)">numeric</span>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="no-cols">✓ No numeric columns found.</div>
-                    {% endif %}
-                    <button type="submit" class="fe-btn fe-btn-purple" {% if not features.numeric %}disabled style="opacity:0.5;cursor:not-allowed"{% endif %}>
-                        📐 Apply Standard Scaling
-                    </button>
-                </form>
+            <div class="col-list">
+              {% for col in features.numeric %}
+              <div class="col-item">
+                <input
+                  type="checkbox"
+                  name="cols"
+                  value="{{ col }}"
+                  id="sc-{{ loop.index }}"
+                />
+                <label for="sc-{{ loop.index }}">{{ col }}</label>
+                <span
+                  class="dtype-tag"
+                  style="
+                    color: var(--primary);
+                    background: rgba(0, 229, 255, 0.08);
+                    border-color: rgba(0, 229, 255, 0.2);
+                  "
+                  >numeric</span
+                >
+              </div>
+              {% endfor %}
             </div>
-
-        </div><!-- end fe-grid -->
-
-        <div class="action-row">
-            <a href="{{ url_for('model') }}" class="btn primary-btn">🤖 Select Model →</a>
-            <a href="{{ url_for('cleaning') }}" class="btn secondary-btn">← Back to Cleaning</a>
-            <a href="{{ url_for('dashboard') }}" class="btn secondary-btn">← Dashboard</a>
+            {% else %}
+            <div class="no-cols">✓ No numeric columns found.</div>
+            {% endif %}
+            <button
+              type="submit"
+              class="fe-btn fe-btn-purple"
+              {%
+              if
+              not
+              features.numeric
+              %}disabled
+              style="opacity: 0.5; cursor: not-allowed"
+              {%
+              endif
+              %}
+            >
+              📐 Apply Standard Scaling
+            </button>
+          </form>
         </div>
+      </div>
+      <!-- end fe-grid -->
+
+      <div class="action-row">
+        <a href="{{ url_for('model') }}" class="btn primary-btn"
+          >🤖 Select Model →</a
+        >
+        <a href="{{ url_for('cleaning') }}" class="btn secondary-btn"
+          >← Back to Cleaning</a
+        >
+        <a href="{{ url_for('dashboard') }}" class="btn secondary-btn"
+          >← Dashboard</a
+        >
+      </div>
     </div>
 
     <script>
-    function toggleAll(formId, checked) {
-        document.getElementById(formId).querySelectorAll('input[type="checkbox"][name="cols"]')
-            .forEach(cb => cb.checked = checked);
-    }
-    (function(){const canvas=document.getElementById('neural-canvas'),ctx=canvas.getContext('2d');let W,H,nodes=[];function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}resize();window.addEventListener('resize',resize);const count=Math.floor((window.innerWidth*window.innerHeight)/14000);for(let i=0;i<count;i++)nodes.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,vx:(Math.random()-0.5)*0.35,vy:(Math.random()-0.5)*0.35,r:Math.random()*2+1.5,pulse:Math.random()*Math.PI*2,color:Math.random()>0.5?'0,229,255':'124,58,237'});function draw(){ctx.clearRect(0,0,W,H);nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;n.pulse+=0.018;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r*4);g.addColorStop(0,`rgba(${n.color},0.9)`);g.addColorStop(1,`rgba(${n.color},0)`);ctx.beginPath();ctx.arc(n.x,n.y,n.r+Math.sin(n.pulse)*0.6,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();});for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const a=nodes[i],b=nodes[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.sqrt(dx*dx+dy*dy);if(d<140){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(0,229,255,${(1-d/140)*0.35})`;ctx.lineWidth=0.6;ctx.stroke();}}requestAnimationFrame(draw);}draw();})();
-    (function(){const tags=['LabelEncoder()','StandardScaler()','apply_label_encoding()','apply_standard_scaling()','get_feature_info()','fit_transform(X)','select_dtypes()','categorical_cols','numeric_cols','Mean=0, Std=1'];const c=document.getElementById('ml-tags');tags.forEach(t=>{const el=document.createElement('div');el.className='ml-tag';el.textContent=t;el.style.left=(3+Math.random()*92)+'%';el.style.animationDuration=(18+Math.random()*22)+'s';el.style.animationDelay=-(Math.random()*30)+'s';c.appendChild(el);});})();
+      function toggleAll(formId, checked) {
+        document
+          .getElementById(formId)
+          .querySelectorAll('input[type="checkbox"][name="cols"]')
+          .forEach((cb) => (cb.checked = checked));
+      }
+      (function () {
+        const canvas = document.getElementById("neural-canvas"),
+          ctx = canvas.getContext("2d");
+        let W,
+          H,
+          nodes = [];
+        function resize() {
+          W = canvas.width = window.innerWidth;
+          H = canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener("resize", resize);
+        const count = Math.floor(
+          (window.innerWidth * window.innerHeight) / 14000,
+        );
+        for (let i = 0; i < count; i++)
+          nodes.push({
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            vx: (Math.random() - 0.5) * 0.35,
+            vy: (Math.random() - 0.5) * 0.35,
+            r: Math.random() * 2 + 1.5,
+            pulse: Math.random() * Math.PI * 2,
+            color: Math.random() > 0.5 ? "0,229,255" : "124,58,237",
+          });
+        function draw() {
+          ctx.clearRect(0, 0, W, H);
+          nodes.forEach((n) => {
+            n.x += n.vx;
+            n.y += n.vy;
+            n.pulse += 0.018;
+            if (n.x < 0 || n.x > W) n.vx *= -1;
+            if (n.y < 0 || n.y > H) n.vy *= -1;
+            const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 4);
+            g.addColorStop(0, `rgba(${n.color},0.9)`);
+            g.addColorStop(1, `rgba(${n.color},0)`);
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, n.r + Math.sin(n.pulse) * 0.6, 0, Math.PI * 2);
+            ctx.fillStyle = g;
+            ctx.fill();
+          });
+          for (let i = 0; i < nodes.length; i++)
+            for (let j = i + 1; j < nodes.length; j++) {
+              const a = nodes[i],
+                b = nodes[j],
+                dx = a.x - b.x,
+                dy = a.y - b.y,
+                d = Math.sqrt(dx * dx + dy * dy);
+              if (d < 140) {
+                ctx.beginPath();
+                ctx.moveTo(a.x, a.y);
+                ctx.lineTo(b.x, b.y);
+                ctx.strokeStyle = `rgba(0,229,255,${(1 - d / 140) * 0.35})`;
+                ctx.lineWidth = 0.6;
+                ctx.stroke();
+              }
+            }
+          requestAnimationFrame(draw);
+        }
+        draw();
+      })();
+      (function () {
+        const tags = [
+          "LabelEncoder()",
+          "StandardScaler()",
+          "apply_label_encoding()",
+          "apply_standard_scaling()",
+          "get_feature_info()",
+          "fit_transform(X)",
+          "select_dtypes()",
+          "categorical_cols",
+          "numeric_cols",
+          "Mean=0, Std=1",
+        ];
+        const c = document.getElementById("ml-tags");
+        tags.forEach((t) => {
+          const el = document.createElement("div");
+          el.className = "ml-tag";
+          el.textContent = t;
+          el.style.left = 3 + Math.random() * 92 + "%";
+          el.style.animationDuration = 18 + Math.random() * 22 + "s";
+          el.style.animationDelay = -(Math.random() * 30) + "s";
+          c.appendChild(el);
+        });
+      })();
     </script>
-</body>
+  </body>
 </html>

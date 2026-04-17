@@ -1,165 +1,390 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Training Results | PipelineX AI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
     <style>
-        .page-wrapper { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:100px 20px 60px; }
-        .result-card {
-            width:100%; max-width:580px; padding:48px 44px;
-            background:rgba(8,12,26,0.88); backdrop-filter:blur(32px);
-            border:1px solid rgba(0,229,255,0.15); border-radius:20px;
-            box-shadow:0 32px 64px rgba(0,0,0,0.6); position:relative; overflow:hidden;
-        }
-        .result-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--accent),var(--primary),var(--secondary)); }
+      .page-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 100px 20px 60px;
+      }
+      .result-card {
+        width: 100%;
+        max-width: 580px;
+        padding: 48px 44px;
+        background: rgba(8, 12, 26, 0.88);
+        backdrop-filter: blur(32px);
+        border: 1px solid rgba(0, 229, 255, 0.15);
+        border-radius: 20px;
+        box-shadow: 0 32px 64px rgba(0, 0, 0, 0.6);
+        position: relative;
+        overflow: hidden;
+      }
+      .result-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          var(--accent),
+          var(--primary),
+          var(--secondary)
+        );
+      }
 
-        .success-banner {
-            display:flex; align-items:center; gap:12px; padding:14px 18px; border-radius:12px;
-            background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3);
-            margin-bottom:28px;
-        }
-        .success-banner .sb-icon { font-size:24px; }
-        .success-banner .sb-text h3 { font-size:15px; font-weight:600; color:#6ee7b7; margin-bottom:2px; }
-        .success-banner .sb-text p  { font-size:12px; color:var(--text-dim); font-family:var(--font-mono); }
+      .success-banner {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 18px;
+        border-radius: 12px;
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        margin-bottom: 28px;
+      }
+      .success-banner .sb-icon {
+        font-size: 24px;
+      }
+      .success-banner .sb-text h3 {
+        font-size: 15px;
+        font-weight: 600;
+        color: #6ee7b7;
+        margin-bottom: 2px;
+      }
+      .success-banner .sb-text p {
+        font-size: 12px;
+        color: var(--text-dim);
+        font-family: var(--font-mono);
+      }
 
-        /* Algorithm + problem tags */
-        .tag-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px; }
-        .tag { padding:4px 12px; border-radius:6px; font-family:var(--font-mono); font-size:12px; font-weight:600; }
-        .tag-algo { background:rgba(0,229,255,0.1); color:var(--primary); border:1px solid rgba(0,229,255,0.25); }
-        .tag-prob { background:rgba(124,58,237,0.1); color:#a78bfa; border:1px solid rgba(124,58,237,0.25); }
+      /* Algorithm + problem tags */
+      .tag-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 28px;
+      }
+      .tag {
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .tag-algo {
+        background: rgba(0, 229, 255, 0.1);
+        color: var(--primary);
+        border: 1px solid rgba(0, 229, 255, 0.25);
+      }
+      .tag-prob {
+        background: rgba(124, 58, 237, 0.1);
+        color: #a78bfa;
+        border: 1px solid rgba(124, 58, 237, 0.25);
+      }
 
-        /* Metric cards */
-        .metrics-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin-bottom:32px; }
-        .metric-box {
-            padding:22px 18px; border-radius:14px; text-align:center;
-            background:rgba(0,229,255,0.04); border:1px solid rgba(0,229,255,0.12);
-            position:relative; overflow:hidden;
-        }
-        .metric-box::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--primary),var(--accent)); }
-        .metric-box .m-name  { font-family:var(--font-mono); font-size:11px; color:var(--text-dim); margin-bottom:10px; letter-spacing:0.06em; text-transform:uppercase; }
-        .metric-box .m-value { font-size:34px; font-weight:700; color:var(--primary); line-height:1; }
-        .metric-box .m-unit  { font-size:11px; color:var(--text-dim); margin-top:6px; }
+      /* Metric cards */
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 14px;
+        margin-bottom: 32px;
+      }
+      .metric-box {
+        padding: 22px 18px;
+        border-radius: 14px;
+        text-align: center;
+        background: rgba(0, 229, 255, 0.04);
+        border: 1px solid rgba(0, 229, 255, 0.12);
+        position: relative;
+        overflow: hidden;
+      }
+      .metric-box::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+      }
+      .metric-box .m-name {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--text-dim);
+        margin-bottom: 10px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .metric-box .m-value {
+        font-size: 34px;
+        font-weight: 700;
+        color: var(--primary);
+        line-height: 1;
+      }
+      .metric-box .m-unit {
+        font-size: 11px;
+        color: var(--text-dim);
+        margin-top: 6px;
+      }
 
-        /* Metric colour variants */
-        .metric-box.good .m-value { color:#6ee7b7; }
-        .metric-box.good::before  { background:linear-gradient(90deg,var(--accent),#34d399); }
-        .metric-box.warn .m-value { color:#fbbf24; }
-        .metric-box.warn::before  { background:linear-gradient(90deg,#f59e0b,#fbbf24); }
+      /* Metric colour variants */
+      .metric-box.good .m-value {
+        color: #6ee7b7;
+      }
+      .metric-box.good::before {
+        background: linear-gradient(90deg, var(--accent), #34d399);
+      }
+      .metric-box.warn .m-value {
+        color: #fbbf24;
+      }
+      .metric-box.warn::before {
+        background: linear-gradient(90deg, #f59e0b, #fbbf24);
+      }
 
-        /* Action buttons */
-        .btn-row { display:flex; flex-direction:column; gap:10px; }
-        .export-btn {
-            width:100%; padding:13px; border-radius:10px; border:none; cursor:pointer;
-            background:linear-gradient(135deg,#10b981,#34d399); color:#04050f;
-            font-weight:700; font-size:15px; font-family:var(--font-main); text-decoration:none;
-            display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.25s;
-        }
-        .export-btn:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(16,185,129,0.35); }
-        .secondary-links { display:flex; gap:10px; }
-        .secondary-links a { flex:1; text-align:center; }
+      /* Action buttons */
+      .btn-row {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .export-btn {
+        width: 100%;
+        padding: 13px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        background: linear-gradient(135deg, #10b981, #34d399);
+        color: #04050f;
+        font-weight: 700;
+        font-size: 15px;
+        font-family: var(--font-main);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.25s;
+      }
+      .export-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 28px rgba(16, 185, 129, 0.35);
+      }
+      .secondary-links {
+        display: flex;
+        gap: 10px;
+      }
+      .secondary-links a {
+        flex: 1;
+        text-align: center;
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <div class="bg-base"></div>
     <div class="bg-dots"></div>
     <div class="bg-scanlines"></div>
     <canvas id="neural-canvas"></canvas>
     <div class="ml-tags" id="ml-tags"></div>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flash-messages">
-                {% for category, message in messages %}
-                    <div class="flash {{ category }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
 
     <nav class="navbar">
-        <a href="{{ url_for('home') }}" class="logo">PipelineX AI</a>
-        <div class="nav-links">
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('algorithm_selection') }}">← Algorithms</a>
-            <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
-        </div>
+      <a href="{{ url_for('home') }}" class="logo">PipelineX AI</a>
+      <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('algorithm_selection') }}">← Algorithms</a>
+        <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+      </div>
     </nav>
 
     <div class="page-wrapper">
-        <div class="result-card">
-            <p style="font-family:var(--font-mono);font-size:11px;color:var(--primary);margin-bottom:12px;letter-spacing:0.1em">// MODULE 12 & 13 — TRAINING & EVALUATION</p>
-
-            <!-- Success banner -->
-            <div class="success-banner">
-                <span class="sb-icon">✅</span>
-                <div class="sb-text">
-                    <h3>Model Trained Successfully</h3>
-                    <p>train_model_logic() completed — metrics below</p>
-                </div>
-            </div>
-
-            <!-- Tags -->
-            <div class="tag-row">
-                <span class="tag tag-algo">{{ algorithm | replace('_',' ') | title }}</span>
-                <span class="tag tag-prob">{{ problem_type | capitalize }}</span>
-            </div>
-
-            <!-- Metrics -->
-            <div class="metrics-grid">
-                {% if metrics.accuracy is defined %}
-                <div class="metric-box {% if metrics.accuracy >= 0.8 %}good{% elif metrics.accuracy >= 0.6 %}warn{% endif %}">
-                    <div class="m-name">Accuracy</div>
-                    <div class="m-value">{{ (metrics.accuracy * 100) | round(1) }}%</div>
-                    <div class="m-unit">accuracy_score()</div>
-                </div>
-                {% endif %}
-
-                {% if metrics.r2 is defined %}
-                <div class="metric-box {% if metrics.r2 >= 0.7 %}good{% elif metrics.r2 >= 0.4 %}warn{% endif %}">
-                    <div class="m-name">R² Score</div>
-                    <div class="m-value">{{ metrics.r2 }}</div>
-                    <div class="m-unit">r2_score()</div>
-                </div>
-                {% endif %}
-
-                {% if metrics.rmse is defined %}
-                <div class="metric-box">
-                    <div class="m-name">RMSE</div>
-                    <div class="m-value" style="font-size:26px">{{ metrics.rmse }}</div>
-                    <div class="m-unit">root mean sq. error</div>
-                </div>
-                {% endif %}
-
-                {% if metrics.silhouette is defined %}
-                <div class="metric-box {% if metrics.silhouette >= 0.5 %}good{% elif metrics.silhouette >= 0.25 %}warn{% endif %}">
-                    <div class="m-name">Silhouette</div>
-                    <div class="m-value">{{ metrics.silhouette }}</div>
-                    <div class="m-unit">silhouette_score()</div>
-                </div>
-                {% endif %}
-            </div>
-
-            <!-- Action buttons -->
-            <div class="btn-row">
-                <a href="{{ url_for('export_model') }}" class="export-btn">
-                    💾 Download Trained Model (.pkl)
-                </a>
-                <div class="secondary-links">
-                    <a href="{{ url_for('algorithm_selection') }}" class="btn secondary-btn">← Try Another</a>
-                    <a href="{{ url_for('model') }}"              class="btn secondary-btn">← Problem</a>
-                    <a href="{{ url_for('dashboard') }}"          class="btn secondary-btn">Dashboard</a>
-                </div>
-            </div>
+      <div class="result-card">
+        <!-- Success banner -->
+        <div class="success-banner">
+          <span class="sb-icon">✅</span>
+          <div class="sb-text">
+            <h3>Model Trained Successfully</h3>
+            <p>train_model_logic() completed — metrics below</p>
+          </div>
         </div>
+
+        <!-- Tags -->
+        <div class="tag-row">
+          <span class="tag tag-algo"
+            >{{ algorithm | replace('_',' ') | title }}</span
+          >
+          <span class="tag tag-prob">{{ problem_type | capitalize }}</span>
+        </div>
+
+        <!-- Metrics -->
+        <div class="metrics-grid">
+          {% if metrics.accuracy is defined %}
+          <div
+            class="metric-box {% if metrics.accuracy >= 0.8 %}good{% elif metrics.accuracy >= 0.6 %}warn{% endif %}"
+          >
+            <div class="m-name">Accuracy</div>
+            <div class="m-value">
+              {{ (metrics.accuracy * 100) | round(1) }}%
+            </div>
+            <div class="m-unit">accuracy_score()</div>
+          </div>
+          {% endif %} {% if metrics.r2 is defined %}
+          <div
+            class="metric-box {% if metrics.r2 >= 0.7 %}good{% elif metrics.r2 >= 0.4 %}warn{% endif %}"
+          >
+            <div class="m-name">R² Score</div>
+            <div class="m-value">{{ metrics.r2 }}</div>
+            <div class="m-unit">r2_score()</div>
+          </div>
+          {% endif %} {% if metrics.rmse is defined %}
+          <div class="metric-box">
+            <div class="m-name">RMSE</div>
+            <div class="m-value" style="font-size: 26px">
+              {{ metrics.rmse }}
+            </div>
+            <div class="m-unit">root mean sq. error</div>
+          </div>
+          {% endif %} {% if metrics.silhouette is defined %}
+          <div
+            class="metric-box {% if metrics.silhouette >= 0.5 %}good{% elif metrics.silhouette >= 0.25 %}warn{% endif %}"
+          >
+            <div class="m-name">Silhouette</div>
+            <div class="m-value">{{ metrics.silhouette }}</div>
+            <div class="m-unit">silhouette_score()</div>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Action buttons -->
+        <div class="btn-row">
+          <a href="{{ url_for('export_model') }}" class="export-btn">
+            💾 Download Trained Model (.pkl)
+          </a>
+          <div class="secondary-links">
+            <a
+              href="{{ url_for('algorithm_selection') }}"
+              class="btn secondary-btn"
+              >← Try Another</a
+            >
+            <a href="{{ url_for('model') }}" class="btn secondary-btn"
+              >← Problem</a
+            >
+            <a href="{{ url_for('dashboard') }}" class="btn secondary-btn"
+              >Dashboard</a
+            >
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
-    (function(){const canvas=document.getElementById('neural-canvas'),ctx=canvas.getContext('2d');let W,H,nodes=[];function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}resize();window.addEventListener('resize',resize);const count=Math.floor((window.innerWidth*window.innerHeight)/14000);for(let i=0;i<count;i++)nodes.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,vx:(Math.random()-0.5)*0.35,vy:(Math.random()-0.5)*0.35,r:Math.random()*2+1.5,pulse:Math.random()*Math.PI*2,color:Math.random()>0.5?'0,229,255':'124,58,237'});function draw(){ctx.clearRect(0,0,W,H);nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;n.pulse+=0.018;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r*4);g.addColorStop(0,`rgba(${n.color},0.9)`);g.addColorStop(1,`rgba(${n.color},0)`);ctx.beginPath();ctx.arc(n.x,n.y,n.r+Math.sin(n.pulse)*0.6,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();});for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const a=nodes[i],b=nodes[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.sqrt(dx*dx+dy*dy);if(d<140){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(0,229,255,${(1-d/140)*0.35})`;ctx.lineWidth=0.6;ctx.stroke();}}requestAnimationFrame(draw);}draw();})();
-    (function(){const tags=['accuracy_score()','r2_score()','rmse','silhouette_score()','model.predict()','joblib.dump()','train_model_logic()','X_test, y_test','80/20 split','metrics={}'];const c=document.getElementById('ml-tags');tags.forEach(t=>{const el=document.createElement('div');el.className='ml-tag';el.textContent=t;el.style.left=(3+Math.random()*92)+'%';el.style.animationDuration=(18+Math.random()*22)+'s';el.style.animationDelay=-(Math.random()*30)+'s';c.appendChild(el);});})();
+      (function () {
+        const canvas = document.getElementById("neural-canvas"),
+          ctx = canvas.getContext("2d");
+        let W,
+          H,
+          nodes = [];
+        function resize() {
+          W = canvas.width = window.innerWidth;
+          H = canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener("resize", resize);
+        const count = Math.floor(
+          (window.innerWidth * window.innerHeight) / 14000,
+        );
+        for (let i = 0; i < count; i++)
+          nodes.push({
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            vx: (Math.random() - 0.5) * 0.35,
+            vy: (Math.random() - 0.5) * 0.35,
+            r: Math.random() * 2 + 1.5,
+            pulse: Math.random() * Math.PI * 2,
+            color: Math.random() > 0.5 ? "0,229,255" : "124,58,237",
+          });
+        function draw() {
+          ctx.clearRect(0, 0, W, H);
+          nodes.forEach((n) => {
+            n.x += n.vx;
+            n.y += n.vy;
+            n.pulse += 0.018;
+            if (n.x < 0 || n.x > W) n.vx *= -1;
+            if (n.y < 0 || n.y > H) n.vy *= -1;
+            const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 4);
+            g.addColorStop(0, `rgba(${n.color},0.9)`);
+            g.addColorStop(1, `rgba(${n.color},0)`);
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, n.r + Math.sin(n.pulse) * 0.6, 0, Math.PI * 2);
+            ctx.fillStyle = g;
+            ctx.fill();
+          });
+          for (let i = 0; i < nodes.length; i++)
+            for (let j = i + 1; j < nodes.length; j++) {
+              const a = nodes[i],
+                b = nodes[j],
+                dx = a.x - b.x,
+                dy = a.y - b.y,
+                d = Math.sqrt(dx * dx + dy * dy);
+              if (d < 140) {
+                ctx.beginPath();
+                ctx.moveTo(a.x, a.y);
+                ctx.lineTo(b.x, b.y);
+                ctx.strokeStyle = `rgba(0,229,255,${(1 - d / 140) * 0.35})`;
+                ctx.lineWidth = 0.6;
+                ctx.stroke();
+              }
+            }
+          requestAnimationFrame(draw);
+        }
+        draw();
+      })();
+      (function () {
+        const tags = [
+          "accuracy_score()",
+          "r2_score()",
+          "rmse",
+          "silhouette_score()",
+          "model.predict()",
+          "joblib.dump()",
+          "train_model_logic()",
+          "X_test, y_test",
+          "80/20 split",
+          "metrics={}",
+        ];
+        const c = document.getElementById("ml-tags");
+        tags.forEach((t) => {
+          const el = document.createElement("div");
+          el.className = "ml-tag";
+          el.textContent = t;
+          el.style.left = 3 + Math.random() * 92 + "%";
+          el.style.animationDuration = 18 + Math.random() * 22 + "s";
+          el.style.animationDelay = -(Math.random() * 30) + "s";
+          c.appendChild(el);
+        });
+      })();
     </script>
-</body>
+  </body>
 </html>
