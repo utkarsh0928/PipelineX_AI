@@ -1,309 +1,539 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>PipelineX AI | Intelligent ML Automation</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}"
-    />
-  </head>
-  <body>
-    <!-- ── Background Layers ── -->
-    <div class="bg-base"></div>
-    <div class="bg-dots"></div>
-    <div class="bg-scanlines"></div>
-    <canvas id="neural-canvas"></canvas>
+<head>
+  <meta charset="UTF-8" />
+  <title>PipelineX AI — ML Automation, Without the Boilerplate</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="PipelineX AI automates the complete machine learning lifecycle — upload, clean, explore, engineer, train, evaluate, export. No setup. No boilerplate." />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
 
-    <!-- Floating ML keyword tags -->
-    <div class="ml-tags" id="ml-tags"></div>
+<body>
 
-    <!-- Floating ML SVG icons -->
-    <div class="bg-icons" id="bg-icons"></div>
+<div class="bg-base"></div>
+<div class="bg-dots"></div>
+<div class="bg-scanlines"></div>
 
-    <!-- ── Flash Messages ── -->
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %}
-    <div class="flash-messages">
-      {% for category, message in messages %}
-      <div class="flash {{ category }}">{{ message }}</div>
-      {% endfor %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flash-messages">
+  {% for category, message in messages %}
+  <div class="flash {{ category }}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+<!-- NAV -->
+<nav>
+  <a href="{{ url_for('home') }}" class="n-logo">Pipeline<span>X</span> AI</a>
+  <div class="n-links">
+    <a href="#how-it-works">How It Works</a>
+    <a href="#features">Features</a>
+    <a href="{{ url_for('login') }}" class="nl-login">Log in</a>
+    <a href="{{ url_for('register') }}" class="nl-cta">Get Started →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="h-left">
+    <div class="h-kicker">Industrial Training Project · ML Automation</div>
+    <h1>
+      The ML pipeline<br/>
+      you don't have<br/>
+      to build <em>from scratch</em>
+    </h1>
+    <p>Upload a dataset. PipelineX handles cleaning, visualization, feature engineering, model training, and export — step by step, in one browser tab.</p>
+    <div class="h-actions">
+      <a href="{{ url_for('register') }}" class="btn-main">Start for free →</a>
+      <a href="#how-it-works" class="btn-ghost">See how it works</a>
     </div>
-    {% endif %} {% endwith %}
+    <div class="h-stats">
+      <div class="h-stat"><div class="sv">8</div><div class="sl">Pipeline modules</div></div>
+      <div class="h-stat"><div class="sv">5</div><div class="sl">Input formats</div></div>
+      <div class="h-stat"><div class="sv">50MB</div><div class="sl">Max upload</div></div>
+      <div class="h-stat"><div class="sv">.pkl</div><div class="sl">Export format</div></div>
+    </div>
+  </div>
 
-    <!-- ── Navbar ── -->
-    <nav class="navbar">
-      <a href="{{ url_for('home') }}" class="logo">PipelineX AI</a>
-      <div class="nav-links">
-        <a href="{{ url_for('login') }}">Login</a>
-        <a href="{{ url_for('register') }}">Register</a>
+  <div class="h-right">
+    <div class="pipeline-card">
+      <div class="pc-bar">
+        <div class="pc-dot"></div><div class="pc-dot"></div><div class="pc-dot"></div>
+        <span class="pc-label">pipeline.status</span>
       </div>
-    </nav>
-
-    <!-- ── Hero ── -->
-    <section class="hero">
-      <h1>Accelerate Your<br />ML Workflow</h1>
-      <p>
-        Automate the complete machine learning lifecycle — from data ingestion
-        and preprocessing to model training, evaluation, and export.
-      </p>
-      <div class="hero-btns">
-        <a href="{{ url_for('register') }}" class="btn primary-btn"
-          >Get Started →</a
-        >
-        <a href="{{ url_for('login') }}" class="btn secondary-btn">Sign In</a>
+      <div class="pc-steps" id="pc-steps">
+        <div class="pc-step s-done"><span class="ps-ic">📂</span><span class="ps-nm">Upload Dataset</span><span class="ps-bg">done</span></div>
+        <div class="pc-step s-done"><span class="ps-ic">📋</span><span class="ps-nm">Data Summary</span><span class="ps-bg">done</span></div>
+        <div class="pc-step s-done"><span class="ps-ic">📊</span><span class="ps-nm">EDA Visualizations</span><span class="ps-bg">done</span></div>
+        <div class="pc-step s-active"><span class="ps-ic">🧹</span><span class="ps-nm">Data Cleaning</span><span class="ps-bg">running</span></div>
+        <div class="pc-step s-wait"><span class="ps-ic">⚙️</span><span class="ps-nm">Feature Engineering</span><span class="ps-bg">queued</span></div>
+        <div class="pc-step s-wait"><span class="ps-ic">🤖</span><span class="ps-nm">Train &amp; Evaluate</span><span class="ps-bg">queued</span></div>
+        <div class="pc-step s-wait"><span class="ps-ic">💾</span><span class="ps-nm">Export Model</span><span class="ps-bg">queued</span></div>
       </div>
-      <div class="hero-stats">
-        <span><strong>6</strong> Core Modules</span>
-        <span><strong>Auto</strong> Preprocessing</span>
-        <span><strong>1-Click</strong> Model Export</span>
-        <span><strong>0</strong> Manual Boilerplate</span>
+      <div class="pc-foot">
+        <div class="pc-pr"><span>Pipeline progress</span><span class="pp" id="pc-pct">42%</span></div>
+        <div class="pc-track"><div class="pc-fill" id="pc-fill" style="width:42%"></div></div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
 
-    <!-- ── Features ── -->
-    <section class="features">
-      <h2>What PipelineX Automates</h2>
-      <div class="feature-grid">
-        <div class="card">
-          <span class="card-icon">🧹</span>
-          <h3>Data Cleaning</h3>
-          <p>
-            Automated duplicate removal, null handling, and structured data
-            correction at scale.
-          </p>
-        </div>
-        <div class="card">
-          <span class="card-icon">📊</span>
-          <h3>EDA Module</h3>
-          <p>
-            Interactive visualizations, correlation heatmaps, and statistical
-            summaries in one click.
-          </p>
-        </div>
-        <div class="card">
-          <span class="card-icon">⚙️</span>
-          <h3>Auto-Preprocessing</h3>
-          <p>
-            Feature scaling, label encoding, and intelligent missing value
-            imputation.
-          </p>
-        </div>
-        <div class="card">
-          <span class="card-icon">💾</span>
-          <h3>Model Export</h3>
-          <p>
-            Save and download production-ready models in
-            <code
-              style="
-                color: var(--primary);
-                font-family: var(--font-mono);
-                font-size: 12px;
-              "
-              >.pkl</code
-            >
-            or
-            <code
-              style="
-                color: var(--primary);
-                font-family: var(--font-mono);
-                font-size: 12px;
-              "
-              >.joblib</code
-            >
-            format.
-          </p>
-        </div>
+<div class="divider"></div>
+
+<!-- HOW IT WORKS -->
+<section class="hiw" id="how-it-works">
+  <span class="s-kicker rv">How it works</span>
+  <h2 class="s-heading rv">Eight steps. One browser tab.</h2>
+  <p class="s-sub rv">No Jupyter notebooks. No pip installs. PipelineX walks you through the entire ML workflow in sequence — from raw file to trained model.</p>
+
+  <div class="hiw-block">
+    <div class="hiw-row rv">
+      <div class="hiw-cell"><span class="hiw-n">01</span><span class="hiw-ic">📂</span><h4>Upload Dataset</h4><p>Drag and drop your data in CSV, Excel, JSON, XML, or HTML. Auto-parsed into a pandas DataFrame.</p><span class="hiw-tag">Module 2–3</span></div>
+      <div class="hiw-cell"><span class="hiw-n">02</span><span class="hiw-ic">📋</span><h4>Data Summary</h4><p>Instant report — row and column counts, data types, missing value analysis, and descriptive statistics per column.</p><span class="hiw-tag">Module 4</span></div>
+      <div class="hiw-cell"><span class="hiw-n">03</span><span class="hiw-ic">📊</span><h4>EDA Visualizations</h4><p>Histograms with KDE, categorical bar charts (top 10), and a full feature correlation heatmap, auto-generated.</p><span class="hiw-tag">Module 5</span></div>
+      <div class="hiw-cell"><span class="hiw-n">04</span><span class="hiw-ic">🧹</span><h4>Data Cleaning</h4><p>Select imputation strategy per column, remove duplicates, and handle outliers using IQR detection.</p><span class="hiw-tag">Module 6–8</span></div>
+    </div>
+    <div class="hiw-row rv d1">
+      <div class="hiw-cell"><span class="hiw-n">05</span><span class="hiw-ic">⚙️</span><h4>Feature Engineering</h4><p>Apply LabelEncoder to categoricals and StandardScaler (mean=0, std=1) to numerics — column by column.</p><span class="hiw-tag">Module 9</span></div>
+      <div class="hiw-cell"><span class="hiw-n">06</span><span class="hiw-ic">🎯</span><h4>Problem Selection</h4><p>Pick Classification, Regression, or Clustering. Set your target column. The right algorithms are surfaced automatically.</p><span class="hiw-tag">Module 10</span></div>
+      <div class="hiw-cell"><span class="hiw-n">07</span><span class="hiw-ic">🤖</span><h4>Train &amp; Evaluate</h4><p>80/20 split, scikit-learn training. Metrics: Accuracy, R², RMSE, or Silhouette — depending on your problem type.</p><span class="hiw-tag">Module 11–13</span></div>
+      <div class="hiw-cell"><span class="hiw-n">08</span><span class="hiw-ic">💾</span><h4>Export Model</h4><p>Download your trained model as a <code>pkl</code> file via <code>joblib.dump()</code>. Load it anywhere with <code>joblib.load()</code>.</p><span class="hiw-tag">Module 14</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<section class="features" id="features" style="padding-top:96px">
+  <span class="s-kicker rv">What's inside</span>
+  <h2 class="s-heading rv">Everything the pipeline needs,<br/>nothing it doesn't</h2>
+  <p class="s-sub rv">Each module is purpose-built for one thing. No configuration files, no hidden defaults.</p>
+
+  <div class="feat-grid">
+    <div class="feat-card rv">
+      <div class="feat-ic">🧹</div>
+      <h3>Data Cleaning</h3>
+      <p>Automated quality fixes that prevent silent model failures downstream.</p>
+      <ul class="feat-list">
+        <li>Mean / Median / Mode imputation per column</li>
+        <li>IQR outlier detection — cap or remove</li>
+        <li>Duplicate row identification &amp; removal</li>
+        <li>String whitespace normalization</li>
+      </ul>
+    </div>
+    <div class="feat-card rv d1">
+      <div class="feat-ic">📊</div>
+      <h3>EDA Visualizations</h3>
+      <p>Understand your data's shape before you touch a model.</p>
+      <ul class="feat-list">
+        <li>Histograms + KDE for all numeric columns</li>
+        <li>Bar charts for top-10 categorical values</li>
+        <li>Correlation heatmap with coolwarm palette</li>
+        <li>Base64-embedded — no external image hosting</li>
+      </ul>
+    </div>
+    <div class="feat-card rv d2">
+      <div class="feat-ic">⚙️</div>
+      <h3>Feature Engineering</h3>
+      <p>Standard transformations, selectively applied to the columns you choose.</p>
+      <ul class="feat-list">
+        <li>LabelEncoder for categorical string columns</li>
+        <li>StandardScaler — normalises to Mean=0, Std=1</li>
+        <li>Column-level checkbox selection in the UI</li>
+        <li>Applied in-memory — no file I/O overhead</li>
+      </ul>
+    </div>
+    <div class="feat-card rv">
+      <div class="feat-ic">🤖</div>
+      <h3>Model Training</h3>
+      <p>Three problem types, five algorithms, one consistent interface.</p>
+      <ul class="feat-list">
+        <li>Classification: Logistic Regression, Random Forest</li>
+        <li>Regression: Linear Regression, Decision Tree</li>
+        <li>Clustering: K-Means (k=3, auto init)</li>
+        <li>Automatic 80/20 train-test split</li>
+      </ul>
+    </div>
+    <div class="feat-card rv d1">
+      <div class="feat-ic">📈</div>
+      <h3>Model Evaluation</h3>
+      <p>Clear metrics with context — colour-coded so you know if a result is good.</p>
+      <ul class="feat-list">
+        <li>Classification: accuracy_score()</li>
+        <li>Regression: r2_score() and RMSE</li>
+        <li>Clustering: silhouette_score()</li>
+        <li>Green ≥ 80%, amber 60–80%, neutral below</li>
+      </ul>
+    </div>
+    <div class="feat-card rv d2">
+      <div class="feat-ic">💾</div>
+      <h3>Model Export</h3>
+      <p>One click to download a file you can load in any Python script.</p>
+      <ul class="feat-list">
+        <li>Serialised with joblib.dump() → .pkl format</li>
+        <li>Load anywhere with joblib.load()</li>
+        <li>Served as a Flask streaming file download</li>
+        <li>No cloud storage or third-party services</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- STACK -->
+<div class="stack rv">
+  <div class="stack-inner">
+    <span class="stack-lbl">Built with</span>
+    <div class="stack-sep"></div>
+    <div class="stack-tags">
+      <span class="stag">Python 3.11</span>
+      <span class="stag">Flask 3.1</span>
+      <span class="stag">SQLAlchemy</span>
+      <span class="stag">pandas 2.2</span>
+      <span class="stag">scikit-learn 1.6</span>
+      <span class="stag">matplotlib</span>
+      <span class="stag">seaborn</span>
+      <span class="stag">joblib</span>
+      <span class="stag">Werkzeug</span>
+      <span class="stag">SQLite</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- WHO IS THIS FOR -->
+<section class="witf" id="who-is-this-for">
+  <div class="witf-left rv">
+    <span class="s-kicker">Who is this for</span>
+    <h2>Built for anyone<br/>who works with <em>data</em></h2>
+    <p>Whether you're learning ML concepts or shipping a proof of concept, PipelineX removes the repetitive setup work so you can focus on what actually matters.</p>
+  </div>
+
+  <div class="witf-cards">
+    <div class="witf-card rv">
+      <div class="witf-icon">🎓</div>
+      <div class="witf-text">
+        <h5>Students &amp; Learners</h5>
+        <p>Visualize what happens at each ML pipeline stage without writing setup code. See exactly how raw data becomes a trained model — great for understanding concepts hands-on without getting lost in boilerplate.</p>
       </div>
-    </section>
+    </div>
+    <div class="witf-card rv d1">
+      <div class="witf-icon">🔬</div>
+      <div class="witf-text">
+        <h5>Data Science Researchers</h5>
+        <p>Quickly explore a new dataset — get EDA charts, missing value reports, and a baseline model trained in minutes. Spend your time interpreting results, not rewriting the same preprocessing pipeline from scratch.</p>
+      </div>
+    </div>
+    <div class="witf-card rv d2">
+      <div class="witf-icon">⚡</div>
+      <div class="witf-text">
+        <h5>Rapid Prototypers</h5>
+        <p>Validate an ML idea fast. Upload → clean → train → export. No Jupyter setup, no pip installing, no boilerplate. If the model metric looks promising, you've just saved yourself two days of environment setup.</p>
+      </div>
+    </div>
+    <div class="witf-card rv d3">
+      <div class="witf-icon">🚀</div>
+      <div class="witf-text">
+        <h5>Startups &amp; Businesses</h5>
+        <p>Need a quick ML proof of concept before committing engineering resources? PipelineX lets non-ML-engineers run structured experiments on business data — churn prediction, sales forecasting, customer segmentation — and get an exportable model file without hiring a data scientist first.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <script>
-      /* ── Neural Network Canvas ── */
-      (function () {
-        const canvas = document.getElementById("neural-canvas");
-        const ctx = canvas.getContext("2d");
-        let W,
-          H,
-          nodes = [],
-          mouse = { x: -999, y: -999 };
+<div class="divider"></div>
 
-        function resize() {
-          W = canvas.width = window.innerWidth;
-          H = canvas.height = window.innerHeight;
-        }
-        resize();
-        window.addEventListener("resize", resize);
-        window.addEventListener("mousemove", (e) => {
-          mouse.x = e.clientX;
-          mouse.y = e.clientY;
-        });
+<!-- CTA -->
+<div class="cta-wrap">
+  <div class="cta-inner rv">
+    <h2>Your dataset is waiting.</h2>
+    <p>Create an account, upload a file, and have a trained model ready to export — no environment setup, no dependencies to install locally.</p>
+    <div class="cta-actions">
+      <a href="{{ url_for('register') }}" class="btn-main">Create free account →</a>
+      <a href="{{ url_for('login') }}" class="btn-ghost">Already have an account</a>
+    </div>
+  </div>
+</div>
 
-        const count = Math.floor(
-          (window.innerWidth * window.innerHeight) / 14000,
-        );
-        for (let i = 0; i < count; i++) {
-          nodes.push({
-            x: Math.random() * window.innerWidth,
-            y: Math.random() * window.innerHeight,
-            vx: (Math.random() - 0.5) * 0.35,
-            vy: (Math.random() - 0.5) * 0.35,
-            r: Math.random() * 2 + 1.5,
-            pulse: Math.random() * Math.PI * 2,
-            color: Math.random() > 0.5 ? "0,229,255" : "124,58,237",
-          });
-        }
+<!-- FOOTER -->
+<footer>
+  <div class="f-main">
+    <div class="f-brand">
+      <a href="{{ url_for('home') }}" class="fb-name">Pipeline<span>X</span> AI</a>
+      <p class="fb-desc">An end-to-end ML automation platform. Covers every stage from raw dataset to exported model — in a single, guided workflow. Built as an Industrial Training Project.</p>
+      <div class="fb-by">Built by <a href="https://github.com/Shivangverma7" target="_blank" rel="noopener">Shivang Verma</a> &amp; <a href="https://github.com/utkarsh0928" target="_blank" rel="noopener">Utkarsh Verma</a> · Industrial Training 2026</div>
+      <div class="fb-badges">
+        <a href="https://github.com/Shivangverma7" target="_blank" rel="noopener" class="fb-badge">Shivang's GitHub ↗</a>
+        <a href="https://github.com/utkarsh0928" target="_blank" rel="noopener" class="fb-badge">Utkarsh's GitHub ↗</a>
+        <span class="fb-badge">MIT License</span>
+      </div>      
+    </div>
 
-        function draw() {
-          ctx.clearRect(0, 0, W, H);
-          nodes.forEach((n) => {
-            n.x += n.vx;
-            n.y += n.vy;
-            n.pulse += 0.018;
-            if (n.x < 0 || n.x > W) n.vx *= -1;
-            if (n.y < 0 || n.y > H) n.vy *= -1;
+    <div class="f-col">
+      <h5>Product</h5>
+      <ul>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="{{ url_for('register') }}">Get Started</a></li>
+        <li><a href="{{ url_for('login') }}">Log In</a></li>
+        <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+      </ul>
+    </div>
 
-            // Mouse repulsion
-            const dx = n.x - mouse.x,
-              dy = n.y - mouse.y,
-              dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 120) {
-              n.vx += (dx / dist) * 0.06;
-              n.vy += (dy / dist) * 0.06;
-            }
+    <div class="f-col">
+      <h5>Company</h5>
+      <ul>
+        <li><span onclick="openM('about')">About Us</span></li>
+        <li><span onclick="openM('contact')">Contact Us</span></li>
+        <li><a href="https://github.com/Shivangverma7" target="_blank" rel="noopener">GitHub ↗</a></li>
+        <li><span onclick="openM('about')">Changelog</span></li>
+      </ul>
+    </div>
 
-            // Clamp speed
-            const spd = Math.sqrt(n.vx * n.vx + n.vy * n.vy);
-            if (spd > 0.8) {
-              n.vx = (n.vx / spd) * 0.8;
-              n.vy = (n.vy / spd) * 0.8;
-            }
+    <div class="f-col">
+      <h5>Legal</h5>
+      <ul>
+        <li><span onclick="openM('privacy')">Privacy Policy</span></li>
+        <li><span onclick="openM('terms')">Terms of Service</span></li>
+        <li><span onclick="openM('privacy')">Cookie Policy</span></li>
+        <li><span onclick="openM('terms')">Licenses</span></li>
+      </ul>
+    </div>
+  </div>
 
-            // Draw node
-            const glow = ctx.createRadialGradient(
-              n.x,
-              n.y,
-              0,
-              n.x,
-              n.y,
-              n.r * 4,
-            );
-            glow.addColorStop(0, `rgba(${n.color},0.9)`);
-            glow.addColorStop(1, `rgba(${n.color},0)`);
-            ctx.beginPath();
-            ctx.arc(n.x, n.y, n.r + Math.sin(n.pulse) * 0.6, 0, Math.PI * 2);
-            ctx.fillStyle = glow;
-            ctx.fill();
-          });
+  <div class="f-bottom">
+    <span class="fc">© 2026 PipelineX AI · Open-source educational project · MIT License</span>
+    <div class="fl">
+      <span onclick="openM('privacy')">Privacy</span>
+      <span onclick="openM('terms')">Terms</span>
+      <span onclick="openM('contact')">Contact</span>
+    </div>
+  </div>
+</footer>
 
-          // Draw connections
-          for (let i = 0; i < nodes.length; i++) {
-            for (let j = i + 1; j < nodes.length; j++) {
-              const a = nodes[i],
-                b = nodes[j];
-              const dx = a.x - b.x,
-                dy = a.y - b.y,
-                d = Math.sqrt(dx * dx + dy * dy);
-              if (d < 140) {
-                const alpha = (1 - d / 140) * 0.35;
-                ctx.beginPath();
-                ctx.moveTo(a.x, a.y);
-                ctx.lineTo(b.x, b.y);
-                ctx.strokeStyle = `rgba(0,229,255,${alpha})`;
-                ctx.lineWidth = 0.6;
-                ctx.stroke();
-              }
-            }
-          }
-          requestAnimationFrame(draw);
-        }
-        draw();
-      })();
 
-      /* ── Floating ML Tags ── */
-      (function () {
-        const tags = [
-          "import numpy as np",
-          "sklearn.fit(X,y)",
-          "torch.nn.Linear()",
-          "pd.DataFrame()",
-          "accuracy_score()",
-          "GridSearchCV",
-          "model.predict(X)",
-          "train_test_split()",
-          "confusion_matrix()",
-          "RandomForestClassifier",
-          "epochs=100",
-          "loss.backward()",
-          "StandardScaler()",
-          "KMeans(n_clusters=5)",
-          "plt.show()",
-          "cross_val_score()",
-          "Pipeline(steps=[])",
-          "LabelEncoder()",
-          "dropout=0.3",
-          "optimizer.step()",
-          "TF-IDF Vectorizer",
-          "sigmoid(x)",
-          "relu(x)",
-          "softmax(logits)",
-          "LSTM(128)",
-          "batch_size=32",
-          "learning_rate=0.001",
-          "val_loss: 0.042",
-        ];
-        const container = document.getElementById("ml-tags");
-        tags.forEach((t, i) => {
-          const el = document.createElement("div");
-          el.className = "ml-tag";
-          el.textContent = t;
-          el.style.left = 3 + Math.random() * 92 + "%";
-          el.style.animationDuration = 18 + Math.random() * 22 + "s";
-          el.style.animationDelay = -(Math.random() * 30) + "s";
-          el.style.fontSize = 10 + Math.random() * 3 + "px";
-          container.appendChild(el);
-        });
-      })();
+<!-- ══ MODAL: ABOUT ══ -->
+<div class="modal-bd" id="m-about" onclick="bdClick(event,'about')">
+  <div class="modal-box">
+    <button class="modal-x" onclick="closeM('about')">✕</button>
+    <span class="modal-tag">Company</span>
+    <h2>About PipelineX AI</h2>
+    <span class="modal-date">Industrial Training Project · 2026 · Built by Shivang Verma &amp; Utkarsh Verma</span>
+    <div class="modal-body">
+      <h3>What is PipelineX AI?</h3>
+      <p>PipelineX AI is a web-based machine learning automation platform that guides users through the complete ML lifecycle — from raw dataset upload to a downloadable trained model — without writing a single line of code.</p>
+      <p>It was built for students, researchers, and practitioners who want to prototype ML workflows quickly, understand what each pipeline stage does, and eliminate the repetitive boilerplate that clutters notebooks and scripts.</p>
 
-      /* ── Floating ML Icons (SVG) ── */
-      (function () {
-        const svgs = [
-          // Brain/neural
-          `<svg width="64" height="64" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="20" r="8" stroke="#00e5ff" stroke-width="1.5"/><circle cx="16" cy="36" r="6" stroke="#7c3aed" stroke-width="1.5"/><circle cx="48" cy="36" r="6" stroke="#7c3aed" stroke-width="1.5"/><circle cx="24" cy="52" r="5" stroke="#00e5ff" stroke-width="1.5"/><circle cx="40" cy="52" r="5" stroke="#00e5ff" stroke-width="1.5"/><line x1="32" y1="28" x2="16" y2="30" stroke="#00e5ff" stroke-width="1" opacity="0.5"/><line x1="32" y1="28" x2="48" y2="30" stroke="#00e5ff" stroke-width="1" opacity="0.5"/><line x1="16" y1="42" x2="24" y2="47" stroke="#7c3aed" stroke-width="1" opacity="0.5"/><line x1="48" y1="42" x2="40" y2="47" stroke="#7c3aed" stroke-width="1" opacity="0.5"/></svg>`,
-          // Matrix
-          `<svg width="60" height="60" viewBox="0 0 60 60" fill="none"><rect x="4" y="4" width="52" height="52" rx="6" stroke="#00e5ff" stroke-width="1.5"/><line x1="4" y1="22" x2="56" y2="22" stroke="#00e5ff" stroke-width="0.8" opacity="0.4"/><line x1="4" y1="38" x2="56" y2="38" stroke="#00e5ff" stroke-width="0.8" opacity="0.4"/><line x1="22" y1="4" x2="22" y2="56" stroke="#00e5ff" stroke-width="0.8" opacity="0.4"/><line x1="38" y1="4" x2="38" y2="56" stroke="#00e5ff" stroke-width="0.8" opacity="0.4"/><circle cx="13" cy="13" r="2" fill="#7c3aed"/><circle cx="30" cy="13" r="2" fill="#00e5ff"/><circle cx="47" cy="13" r="2" fill="#10b981"/></svg>`,
-          // Chart/loss curve
-          `<svg width="70" height="50" viewBox="0 0 70 50" fill="none"><polyline points="4,44 15,38 26,30 34,20 44,14 56,10 66,8" stroke="#10b981" stroke-width="2" fill="none"/><circle cx="4" cy="44" r="2.5" fill="#10b981"/><circle cx="56" cy="10" r="2.5" fill="#10b981"/><line x1="4" y1="48" x2="66" y2="48" stroke="#00e5ff" stroke-width="0.8" opacity="0.4"/><line x1="4" y1="4"  x2="4"  y2="48" stroke="#00e5ff" stroke-width="0.8" opacity="0.4"/></svg>`,
-          // Sigma / activation
-          `<svg width="56" height="56" viewBox="0 0 56 56" fill="none"><text x="8" y="42" font-size="40" fill="#7c3aed" font-family="serif" opacity="0.9">Σ</text></svg>`,
-          // Python logo-ish
-          `<svg width="56" height="56" viewBox="0 0 56 56" fill="none"><rect x="8" y="4" width="40" height="20" rx="6" stroke="#00e5ff" stroke-width="1.5"/><rect x="8" y="32" width="40" height="20" rx="6" stroke="#7c3aed" stroke-width="1.5"/><circle cx="20" cy="14" r="3" fill="#00e5ff"/><circle cx="36" cy="42" r="3" fill="#7c3aed"/></svg>`,
-          // Scatter plot
-          `<svg width="60" height="60" viewBox="0 0 60 60" fill="none"><circle cx="12" cy="48" r="3" fill="#00e5ff" opacity="0.8"/><circle cx="20" cy="35" r="2.5" fill="#00e5ff" opacity="0.7"/><circle cx="30" cy="25" r="3" fill="#7c3aed" opacity="0.8"/><circle cx="42" cy="18" r="2" fill="#10b981" opacity="0.8"/><circle cx="50" cy="10" r="3" fill="#7c3aed" opacity="0.7"/><line x1="6" y1="54" x2="56" y2="54" stroke="#00e5ff" stroke-width="0.8" opacity="0.3"/><line x1="6" y1="6"  x2="6"  y2="54" stroke="#00e5ff" stroke-width="0.8" opacity="0.3"/></svg>`,
-        ];
-        const container = document.getElementById("bg-icons");
-        const positions = [
-          { top: "8%", left: "5%" },
-          { top: "15%", right: "6%" },
-          { top: "40%", left: "3%" },
-          { top: "55%", right: "4%" },
-          { top: "70%", left: "8%" },
-          { top: "25%", right: "12%" },
-        ];
-        svgs.forEach((svg, i) => {
-          const el = document.createElement("div");
-          el.className = "bg-icon";
-          el.innerHTML = svg;
-          Object.assign(el.style, positions[i]);
-          el.style.animationDuration = 8 + i * 2.5 + "s";
-          el.style.animationDelay = -(i * 1.8) + "s";
-          container.appendChild(el);
-        });
-      })();
-    </script>
-  </body>
+      <h3>Why it was built</h3>
+      <p>Every ML project starts the same way: load data, check for missing values, visualize distributions, encode categoricals, scale numerics, split data, train, evaluate, export. This work is real, necessary, and almost entirely identical across projects. PipelineX encodes this best-practice workflow into a guided web interface so you can focus on decisions that actually matter — which features to use, which algorithm to try, how to interpret your results.</p>
+
+      <h3>The pipeline — 8 modules</h3>
+      <ul>
+        <li><strong>Module 2–3:</strong> File upload and multi-format parsing (CSV, Excel, JSON, XML, HTML)</li>
+        <li><strong>Module 4:</strong> Dataset summary — shape, dtypes, missing value analysis, descriptive statistics</li>
+        <li><strong>Module 5:</strong> EDA — histograms, bar charts, correlation heatmap (matplotlib + seaborn)</li>
+        <li><strong>Module 6–8:</strong> Data cleaning — imputation, IQR outlier handling, duplicate removal</li>
+        <li><strong>Module 9:</strong> Feature engineering — LabelEncoder, StandardScaler, selective column application</li>
+        <li><strong>Module 10:</strong> Problem selection — Classification, Regression, or Clustering + target column</li>
+        <li><strong>Module 11–13:</strong> Algorithm selection, training (80/20 split), evaluation (Accuracy / R² / RMSE / Silhouette)</li>
+        <li><strong>Module 14:</strong> Model export — serialized with joblib.dump() to .pkl, served as file download</li>
+      </ul>
+
+      <h3>Technology stack</h3>
+      <div class="tech-row">
+        <span class="tech-tag">Python 3.11</span><span class="tech-tag">Flask 3.1</span><span class="tech-tag">Flask-SQLAlchemy</span><span class="tech-tag">SQLite</span><span class="tech-tag">pandas 2.2</span><span class="tech-tag">scikit-learn 1.6</span><span class="tech-tag">matplotlib 3.10</span><span class="tech-tag">seaborn 0.13</span><span class="tech-tag">joblib</span><span class="tech-tag">Werkzeug</span>
+      </div>
+
+      <h3>Author</h3>
+      <p>Built by <strong>Shivang Verma</strong> and <strong>Utkarsh Verma</strong> as an Industrial Training Project. Source code is available on <a href="https://github.com/Shivangverma7" target="_blank">Shivang's GitHub</a> and <a href="https://github.com/utkarsh0928" target="_blank">Utkarsh's GitHub</a> under the MIT License.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ MODAL: CONTACT ══ -->
+<div class="modal-bd" id="m-contact" onclick="bdClick(event,'contact')">
+  <div class="modal-box">
+    <button class="modal-x" onclick="closeM('contact')">✕</button>
+    <span class="modal-tag">Support</span>
+    <h2>Contact Us</h2>
+    <span class="modal-date">We typically respond within 48 hours on weekdays.</span>
+    <div class="modal-body">
+      <p>Have a question about PipelineX, found a bug, or want to contribute? Reach out via the form below or directly through <a href="https://github.com/Shivangverma7" target="_blank">GitHub Issues</a> — which is the fastest path for bug reports and feature requests.</p>
+    </div>
+    <form class="cf" id="cf-form" onsubmit="cfSubmit(event)">
+      <div class="cf-row">
+        <div><label class="cf-lbl">Full name</label><input class="cf-input" type="text" placeholder="Your name" required /></div>
+        <div><label class="cf-lbl">Email</label><input class="cf-input" type="email" placeholder="you@example.com" required /></div>
+      </div>
+      <div>
+        <label class="cf-lbl">Subject</label>
+        <select class="cf-sel" required>
+          <option value="" disabled selected>Select a subject…</option>
+          <option>Bug report</option>
+          <option>Feature request</option>
+          <option>Question about the pipeline</option>
+          <option>Contribution / collaboration</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div>
+        <label class="cf-lbl">Message</label>
+        <textarea class="cf-ta" placeholder="Describe your question or issue…" required></textarea>
+      </div>
+      <button type="submit" class="cf-submit">Send message →</button>
+      <p class="cf-note">This form is for demonstration. For real contact, use <a href="https://github.com/Shivangverma7" target="_blank">GitHub Issues</a>.</p>
+    </form>
+    <div id="cf-ok" style="display:none;padding:18px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:10px;margin-top:14px;color:#6ee7b7;font-size:14px;">✓ Message received — we'll be in touch shortly.</div>
+  </div>
+</div>
+
+
+<!-- ══ MODAL: PRIVACY ══ -->
+<div class="modal-bd" id="m-privacy" onclick="bdClick(event,'privacy')">
+  <div class="modal-box">
+    <button class="modal-x" onclick="closeM('privacy')">✕</button>
+    <span class="modal-tag">Legal</span>
+    <h2>Privacy Policy</h2>
+    <span class="modal-date">Effective: March 1, 2026 · Last updated: April 2026</span>
+    <div class="modal-body">
+      <p>This Privacy Policy explains what information PipelineX AI collects, how it is used, and your rights regarding that information.</p>
+
+      <h3>1. Information we collect</h3>
+      <p><strong>Account data:</strong> When you register, we collect your full name, email address, and a hashed version of your password. Your password is never stored in plaintext — it is hashed using Werkzeug's <code>generate_password_hash()</code> before being written to the database.</p>
+      <p><strong>Uploaded datasets:</strong> Files you upload are temporarily stored in a local <code>uploads/</code> directory during your session. The parsed DataFrame is held in server memory. We do not permanently store, analyse, or share your data.</p>
+      <p><strong>Session data:</strong> We use server-side Flask sessions to maintain your login state and transient pipeline state (filename, problem type, algorithm). This data is cleared on logout.</p>
+
+      <h3>2. How we use your information</h3>
+      <ul>
+        <li>To authenticate you and maintain your session</li>
+        <li>To process your uploaded dataset through the ML pipeline</li>
+        <li>To serve visualizations and trained model files back to you</li>
+      </ul>
+      <p>We do not use your data for advertising, profiling, or analytics of any kind.</p>
+
+      <h3>3. Data retention</h3>
+      <p>Uploaded files are not guaranteed to persist beyond your session. Account data (name, email, hashed password) is stored in a local SQLite database (<code>users.db</code>) and retained until you request deletion.</p>
+
+      <h3>4. Cookies</h3>
+      <p>We use a single session cookie to maintain your login state. No tracking or analytics cookies are set. Disabling cookies will prevent login from functioning.</p>
+
+      <h3>5. Third-party services</h3>
+      <p>PipelineX AI does not share your data with any third parties. Google Fonts is used for typography — your browser may request font files from Google's CDN.</p>
+
+      <h3>6. Security</h3>
+      <p>Passwords are stored as salted hashes. Sessions are signed with a server-side secret key. This is an educational project and is not hardened for production security — do not upload sensitive or confidential datasets.</p>
+
+      <h3>7. Your rights</h3>
+      <p>You may request deletion of your account and data at any time by opening an issue at <a href="https://github.com/Shivangverma7" target="_blank">github.com/Shivangverma7</a>.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ MODAL: TERMS ══ -->
+<div class="modal-bd" id="m-terms" onclick="bdClick(event,'terms')">
+  <div class="modal-box">
+    <button class="modal-x" onclick="closeM('terms')">✕</button>
+    <span class="modal-tag">Legal</span>
+    <h2>Terms of Service</h2>
+    <span class="modal-date">Effective: March 1, 2026 · Last updated: April 2026</span>
+    <div class="modal-body">
+      <p>By using PipelineX AI, you agree to these Terms. If you do not agree, do not use the service.</p>
+
+      <h3>1. Use of the service</h3>
+      <p>PipelineX AI is an educational and demonstration tool provided free of charge. You may use it to upload and process datasets, train ML models, and download model files. You must be at least 13 years old to create an account.</p>
+
+      <h3>2. Account responsibilities</h3>
+      <p>You are responsible for maintaining the confidentiality of your credentials and for all activity under your account. Passwords must be at least 8 characters and contain at least one letter, digit, and special character.</p>
+
+      <h3>3. Acceptable use</h3>
+      <p>You agree not to:</p>
+      <ul>
+        <li>Upload datasets containing others' personally identifiable information without consent</li>
+        <li>Attempt to exploit vulnerabilities in the application or its hosting infrastructure</li>
+        <li>Use the service for unlawful purposes</li>
+        <li>Upload malicious files designed to compromise the server</li>
+        <li>Create accounts using false identities or impersonate others</li>
+        <li>Use automated tools to scrape or abuse the application</li>
+      </ul>
+
+      <h3>4. Your data</h3>
+      <p>You retain full ownership of any datasets you upload. By uploading, you grant PipelineX AI a limited, temporary licence to process that file solely to provide the service to you. We claim no rights to your data and do not share it externally.</p>
+
+      <h3>5. Intellectual property</h3>
+      <p>PipelineX AI is released under the MIT License. The source code is available on <a href="https://github.com/Shivangverma7" target="_blank">GitHub</a>. The PipelineX AI name may not be used to imply endorsement without permission.</p>
+
+      <h3>6. Disclaimer of warranties</h3>
+      <p>The service is provided <strong>"as is"</strong> without warranty of any kind. We do not warrant that the service will be error-free, uninterrupted, or that model outputs will be accurate or suitable for any particular purpose.</p>
+
+      <h3>7. Limitation of liability</h3>
+      <p>To the maximum extent permitted by law, PipelineX AI and its contributors shall not be liable for any indirect, incidental, or consequential damages arising from your use of the service — including business decisions made based on model outputs.</p>
+
+      <h3>8. Changes to these terms</h3>
+      <p>We may update these Terms from time to time. The "Last updated" date reflects the most recent revision. Continued use after changes constitutes acceptance.</p>
+
+      <h3>9. Contact</h3>
+      <p>For questions about these Terms, open an issue at <a href="https://github.com/Shivangverma7" target="_blank">github.com/Shivangverma7</a>.</p>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  /* Scroll reveal */
+  const io = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('up'); }), { threshold:0.08, rootMargin:'0px 0px -28px 0px' });
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+
+  /* Pipeline card animation */
+  (function(){
+    const steps = document.querySelectorAll('#pc-steps .pc-step');
+    const fill  = document.getElementById('pc-fill');
+    const pct   = document.getElementById('pc-pct');
+    let a = 3;
+    setInterval(function(){
+      steps.forEach(function(s,i){
+        s.className = 'pc-step ' + (i<a?'s-done':i===a?'s-active':'s-wait');
+        s.querySelector('.ps-bg').textContent = i<a?'done':i===a?'running':'queued';
+      });
+      var p = Math.round(((a+0.5)/steps.length)*100);
+      fill.style.width = p+'%'; pct.textContent = p+'%';
+      a = a >= steps.length-1 ? 0 : a+1;
+      if(a===0) a=1;
+    }, 2200);
+  })();
+
+  /* Modals */
+  function openM(id){
+    document.body.style.overflow='hidden';
+    document.getElementById('m-'+id).classList.add('open');
+  }
+  function closeM(id){
+    document.getElementById('m-'+id).classList.remove('open');
+    document.body.style.overflow='';
+  }
+  function bdClick(e,id){ if(e.target===document.getElementById('m-'+id)) closeM(id); }
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') document.querySelectorAll('.modal-bd.open').forEach(function(m){ m.classList.remove('open'); document.body.style.overflow=''; }); });
+
+  /* Contact form */
+  function cfSubmit(e){
+    e.preventDefault();
+    document.getElementById('cf-form').style.display='none';
+    document.getElementById('cf-ok').style.display='block';
+  }
+
+  /* Smooth scroll */
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click',function(e){
+      var t=document.querySelector(a.getAttribute('href'));
+      if(t){ e.preventDefault(); t.scrollIntoView({behavior:'smooth',block:'start'}); }
+    });
+  });
+</script>
+
+</body>
 </html>

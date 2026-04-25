@@ -1,237 +1,104 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Summary | PipelineX AI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <style>
-        .page-wrapper { min-height:100vh; padding:100px 6% 60px; }
-        .page-header  { margin-bottom:36px; }
-        .page-header h1 { font-size:28px; font-weight:700; letter-spacing:-0.5px; background:linear-gradient(135deg,#fff 0%,var(--primary) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-        .page-header p  { color:var(--text-dim); font-size:13px; font-family:var(--font-mono); margin-top:4px; }
-
-        /* Metric cards row */
-        .metric-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:36px; }
-        .metric-card {
-            padding:20px 22px; border-radius:14px;
-            background:var(--glass); border:1px solid rgba(0,229,255,0.1);
-            backdrop-filter:blur(16px);
-        }
-        .metric-card .m-label { font-family:var(--font-mono); font-size:11px; color:var(--text-dim); margin-bottom:8px; letter-spacing:0.06em; }
-        .metric-card .m-value { font-size:28px; font-weight:700; color:var(--primary); line-height:1; }
-        .metric-card .m-unit  { font-size:12px; color:var(--text-dim); margin-top:4px; }
-
-        /* Section titles */
-        .section-title { font-size:15px; font-weight:600; color:var(--text-bright); margin:32px 0 14px; display:flex; align-items:center; gap:10px; }
-        .section-title::after { content:''; flex:1; height:1px; background:rgba(0,229,255,0.1); }
-
-        /* Tables */
-        .data-table { width:100%; border-collapse:collapse; font-size:13px; }
-        .data-table th {
-            text-align:left; padding:10px 14px;
-            font-family:var(--font-mono); font-size:11px; font-weight:600;
-            color:var(--primary); letter-spacing:0.06em; text-transform:uppercase;
-            border-bottom:1px solid rgba(0,229,255,0.15);
-            background:rgba(0,229,255,0.04);
-        }
-        .data-table td {
-            padding:10px 14px; color:var(--text-main);
-            border-bottom:1px solid rgba(255,255,255,0.04);
-            font-family:var(--font-mono); font-size:12px;
-        }
-        .data-table tr:hover td { background:rgba(0,229,255,0.03); }
-        .data-table .dtype  { color:#a78bfa; }
-        .data-table .miss   { color:#f87171; }
-        .data-table .nomiss { color:#6ee7b7; }
-
-        /* Missing % bar */
-        .miss-bar-wrap { display:flex; align-items:center; gap:8px; }
-        .miss-bar { height:4px; border-radius:2px; background:rgba(255,255,255,0.08); flex:1; min-width:60px; }
-        .miss-bar-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,#f59e0b,#ef4444); }
-
-        /* Table scroll wrapper */
-        .table-scroll { overflow-x:auto; border-radius:12px; border:1px solid rgba(0,229,255,0.08); }
-
-        /* Action buttons row */
-        .action-row { display:flex; gap:12px; flex-wrap:wrap; margin-top:36px; }
-    </style>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Data Summary | PipelineX AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+<div class="bg-base"></div><div class="bg-dots"></div><div class="bg-scanlines"></div>
 
-    <div class="bg-base"></div>
-    <div class="bg-dots"></div>
-    <div class="bg-scanlines"></div>
-    <canvas id="neural-canvas"></canvas>
-    <div class="ml-tags" id="ml-tags"></div>
+{% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="flash-messages">{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flash-messages">
-                {% for category, message in messages %}
-                    <div class="flash {{ category }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
+<nav class="navbar">
+  <a href="{{ url_for('home') }}" class="logo">Pipeline<span>X</span> AI</a>
+  <div class="nav-links">
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('upload') }}">Upload</a>
+    <a href="{{ url_for('eda') }}">EDA →</a>
+    <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+  </div>
+</nav>
 
-    <nav class="navbar">
-        <a href="{{ url_for('home') }}" class="logo">PipelineX AI</a>
-        <div class="nav-links">
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('upload') }}">Upload</a>
-            <a href="{{ url_for('eda') }}">EDA →</a>
-            <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
-        </div>
-    </nav>
+<div class="page-wrapper">
+  <div class="page-header">
+    <h1>Dataset Summary</h1>
+    <p>📄 {{ filename }}</p>
+  </div>
 
-    <div class="page-wrapper">
-        <div class="page-header">
-            <h1>Dataset Summary</h1>
-            <p>📄 {{ filename }}</p>
-        </div>
-
-        <!-- ── Key Metrics ── -->
-        <div class="metric-row">
-            <div class="metric-card">
-                <div class="m-label">TOTAL ROWS</div>
-                <div class="m-value">{{ summary.rows }}</div>
-                <div class="m-unit">samples</div>
-            </div>
-            <div class="metric-card">
-                <div class="m-label">TOTAL COLUMNS</div>
-                <div class="m-value">{{ summary.cols }}</div>
-                <div class="m-unit">features</div>
-            </div>
-            <div class="metric-card">
-                <div class="m-label">NUMERIC COLS</div>
-                <div class="m-value">{{ summary.stats | length }}</div>
-                <div class="m-unit">columns</div>
-            </div>
-            <div class="metric-card">
-                <div class="m-label">COLS WITH MISSING</div>
-                <div class="m-value" style="color:{% if summary.columns_info | selectattr('missing','gt',0) | list | length > 0 %}#f87171{% else %}#6ee7b7{% endif %}">
-                    {{ summary.columns_info | selectattr('missing', 'gt', 0) | list | length }}
-                </div>
-                <div class="m-unit">columns</div>
-            </div>
-        </div>
-
-        <!-- ── Column Info Table ── -->
-        <div class="section-title">Column Information</div>
-        <div class="table-scroll">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Column Name</th>
-                        <th>Data Type</th>
-                        <th>Missing</th>
-                        <th>Missing %</th>
-                        <th>Coverage</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for col in summary.columns_info %}
-                    <tr>
-                        <td style="color:var(--text-dim)">{{ loop.index }}</td>
-                        <td style="color:var(--text-bright);font-weight:500">{{ col.name }}</td>
-                        <td class="dtype">{{ col.dtype }}</td>
-                        <td class="{% if col.missing > 0 %}miss{% else %}nomiss{% endif %}">
-                            {{ col.missing }}
-                        </td>
-                        <td class="{% if col.missing_pct > 0 %}miss{% else %}nomiss{% endif %}">
-                            {{ col.missing_pct }}%
-                        </td>
-                        <td>
-                            <div class="miss-bar-wrap">
-                                <div class="miss-bar">
-                                    <div class="miss-bar-fill" style="width:{{ col.missing_pct }}%"></div>
-                                </div>
-                                <span style="font-size:11px;color:var(--text-dim)">{{ 100 - col.missing_pct }}%</span>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <!-- ── Descriptive Stats ── -->
-        {% if summary.stats %}
-        <div class="section-title">Descriptive Statistics (Numeric Columns)</div>
-        <div class="table-scroll">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Column</th>
-                        <th>Count</th>
-                        <th>Mean</th>
-                        <th>Std Dev</th>
-                        <th>Min</th>
-                        <th>25%</th>
-                        <th>50% (Median)</th>
-                        <th>75%</th>
-                        <th>Max</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for col, stat in summary.stats.items() %}
-                    <tr>
-                        <td style="color:var(--text-bright);font-weight:500">{{ col }}</td>
-                        <td>{{ stat.get('count', '-') }}</td>
-                        <td style="color:var(--primary)">{{ stat.get('mean', '-') }}</td>
-                        <td>{{ stat.get('std', '-') }}</td>
-                        <td>{{ stat.get('min', '-') }}</td>
-                        <td>{{ stat.get('25%', '-') }}</td>
-                        <td>{{ stat.get('50%', '-') }}</td>
-                        <td>{{ stat.get('75%', '-') }}</td>
-                        <td>{{ stat.get('max', '-') }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% endif %}
-
-        <!-- ── Data Preview ── -->
-        <div class="section-title">Data Preview (First 5 Rows)</div>
-        <div class="table-scroll">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        {% for col in summary.preview_cols %}
-                        <th>{{ col }}</th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in summary.preview_rows %}
-                    <tr>
-                        <td style="color:var(--text-dim)">{{ loop.index }}</td>
-                        {% for val in row %}
-                        <td>{{ val }}</td>
-                        {% endfor %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <!-- ── Actions ── -->
-        <div class="action-row">
-            <a href="{{ url_for('eda') }}" class="btn primary-btn">📊 Run EDA →</a>
-            <a href="{{ url_for('upload') }}" class="btn secondary-btn">📂 Upload New Dataset</a>
-            <a href="{{ url_for('dashboard') }}" class="btn secondary-btn">← Dashboard</a>
-        </div>
-
+  <div class="metric-row">
+    <div class="metric-card"><div class="m-label">TOTAL ROWS</div><div class="m-value">{{ summary.rows }}</div><div class="m-unit">samples</div></div>
+    <div class="metric-card"><div class="m-label">TOTAL COLUMNS</div><div class="m-value">{{ summary.cols }}</div><div class="m-unit">features</div></div>
+    <div class="metric-card"><div class="m-label">NUMERIC COLS</div><div class="m-value">{{ summary.stats | length }}</div><div class="m-unit">columns</div></div>
+    <div class="metric-card">
+      <div class="m-label">COLS WITH MISSING</div>
+      <div class="m-value" style="color:{% if summary.columns_info | selectattr('missing','gt',0) | list | length > 0 %}#f87171{% else %}#6ee7b7{% endif %}">{{ summary.columns_info | selectattr('missing', 'gt', 0) | list | length }}</div>
+      <div class="m-unit">columns</div>
     </div>
+  </div>
 
-    <script>
-    (function(){const canvas=document.getElementById('neural-canvas');const ctx=canvas.getContext('2d');let W,H,nodes=[];function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}resize();window.addEventListener('resize',resize);const count=Math.floor((window.innerWidth*window.innerHeight)/14000);for(let i=0;i<count;i++)nodes.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,vx:(Math.random()-0.5)*0.35,vy:(Math.random()-0.5)*0.35,r:Math.random()*2+1.5,pulse:Math.random()*Math.PI*2,color:Math.random()>0.5?'0,229,255':'124,58,237'});function draw(){ctx.clearRect(0,0,W,H);nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;n.pulse+=0.018;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r*4);g.addColorStop(0,`rgba(${n.color},0.9)`);g.addColorStop(1,`rgba(${n.color},0)`);ctx.beginPath();ctx.arc(n.x,n.y,n.r+Math.sin(n.pulse)*0.6,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();});for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const a=nodes[i],b=nodes[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.sqrt(dx*dx+dy*dy);if(d<140){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(0,229,255,${(1-d/140)*0.35})`;ctx.lineWidth=0.6;ctx.stroke();}}requestAnimationFrame(draw);}draw();})();
-    (function(){const tags=['df.describe()','df.shape','df.dtypes','df.isnull().sum()','df.head(5)','missing_pct','columns_info','get_summary(df)','numeric_cols','preview_rows'];const c=document.getElementById('ml-tags');tags.forEach(t=>{const el=document.createElement('div');el.className='ml-tag';el.textContent=t;el.style.left=(3+Math.random()*92)+'%';el.style.animationDuration=(18+Math.random()*22)+'s';el.style.animationDelay=-(Math.random()*30)+'s';c.appendChild(el);});})();
-    </script>
-</body>
-</html>
+  <div class="section-title">Column Information</div>
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead><tr><th>#</th><th>Column Name</th><th>Data Type</th><th>Missing</th><th>Missing %</th><th>Coverage</th></tr></thead>
+      <tbody>
+        {% for col in summary.columns_info %}
+        <tr>
+          <td style="color:var(--text-dim)">{{ loop.index }}</td>
+          <td style="color:var(--text-bright);font-weight:500">{{ col.name }}</td>
+          <td class="dtype">{{ col.dtype }}</td>
+          <td class="{% if col.missing > 0 %}miss{% else %}nomiss{% endif %}">{{ col.missing }}</td>
+          <td class="{% if col.missing_pct > 0 %}miss{% else %}nomiss{% endif %}">{{ col.missing_pct }}%</td>
+          <td><div class="miss-bar-wrap"><div class="miss-bar"><div class="miss-bar-fill" style="width:{{ col.missing_pct }}%"></div></div><span style="font-size:11px;color:var(--text-dim)">{{ 100 - col.missing_pct }}%</span></div></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if summary.stats %}
+  <div class="section-title">Descriptive Statistics (Numeric Columns)</div>
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead><tr><th>Column</th><th>Count</th><th>Mean</th><th>Std Dev</th><th>Min</th><th>25%</th><th>50%</th><th>75%</th><th>Max</th></tr></thead>
+      <tbody>
+        {% for col, stat in summary.stats.items() %}
+        <tr>
+          <td style="color:var(--text-bright);font-weight:500">{{ col }}</td>
+          <td>{{ stat.get('count','-') }}</td>
+          <td style="color:var(--am)">{{ stat.get('mean','-') }}</td>
+          <td>{{ stat.get('std','-') }}</td>
+          <td>{{ stat.get('min','-') }}</td>
+          <td>{{ stat.get('25%','-') }}</td>
+          <td>{{ stat.get('50%','-') }}</td>
+          <td>{{ stat.get('75%','-') }}</td>
+          <td>{{ stat.get('max','-') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <div class="section-title">Data Preview (First 5 Rows)</div>
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead><tr><th>#</th>{% for col in summary.preview_cols %}<th>{{ col }}</th>{% endfor %}</tr></thead>
+      <tbody>
+        {% for row in summary.preview_rows %}
+        <tr><td style="color:var(--text-dim)">{{ loop.index }}</td>{% for val in row %}<td>{{ val }}</td>{% endfor %}</tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="action-row">
+    <a href="{{ url_for('eda') }}" class="btn primary-btn">📊 Run EDA →</a>
+    <a href="{{ url_for('upload') }}" class="btn secondary-btn">📂 Upload New Dataset</a>
+    <a href="{{ url_for('dashboard') }}" class="btn secondary-btn">← Dashboard</a>
+  </div>
+</div>
+
+
+</body></html>

@@ -1,368 +1,61 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard | PipelineX AI</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}"
-    />
-    <style>
-      /* ── Active card overrides ── */
-      .module-card.active {
-        cursor: pointer;
-        border-color: rgba(0, 229, 255, 0.2);
-      }
-      .module-card.active .badge {
-        background: rgba(16, 185, 129, 0.15);
-        color: #6ee7b7;
-        border-color: rgba(16, 185, 129, 0.35);
-      }
-      .module-card a {
-        text-decoration: none;
-        color: inherit;
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-      }
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Dashboard | PipelineX AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="bg-base"></div><div class="bg-dots"></div><div class="bg-scanlines"></div>
 
-      /* ── Force all cards same height inside grid ── */
-      .module-grid {
-        align-items: stretch;
-      }
-      .module-card {
-        display: flex;
-        flex-direction: column;
-      }
-      .module-card p {
-        flex: 1;
-      }
+{% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="flash-messages">{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
 
-      /* ── Pipeline flow bar ── */
-      .pipeline-flow {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        flex-wrap: wrap;
-        margin-bottom: 32px;
-        padding: 14px 18px;
-        background: rgba(0, 229, 255, 0.03);
-        border: 1px solid rgba(0, 229, 255, 0.1);
-        border-radius: 12px;
-        font-family: var(--font-mono);
-        font-size: 11px;
-      }
-      .pipeline-flow .step {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 4px 10px;
-        border-radius: 6px;
-        border: 1px solid rgba(0, 229, 255, 0.12);
-        color: var(--text-dim);
-        white-space: nowrap;
-      }
-      .pipeline-flow .step.done {
-        color: #6ee7b7;
-        border-color: rgba(16, 185, 129, 0.35);
-        background: rgba(16, 185, 129, 0.08);
-      }
-      .pipeline-flow .step.ready {
-        color: var(--primary);
-        border-color: rgba(0, 229, 255, 0.3);
-        background: rgba(0, 229, 255, 0.07);
-      }
-      .pipeline-flow .arrow {
-        color: rgba(100, 116, 139, 0.5);
-        font-size: 10px;
-        flex-shrink: 0;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="bg-base"></div>
-    <div class="bg-dots"></div>
-    <div class="bg-scanlines"></div>
-    <canvas id="neural-canvas"></canvas>
-    <div class="ml-tags" id="ml-tags"></div>
+<nav class="navbar">
+  <a href="{{ url_for('home') }}" class="logo">Pipeline<span>X</span> AI</a>
+  <div class="nav-links">
+    <a href="{{ url_for('upload') }}">Upload</a>
+    <a href="{{ url_for('summary') }}">Summary</a>
+    <a href="{{ url_for('eda') }}">EDA</a>
+    <a href="{{ url_for('cleaning') }}">Cleaning</a>
+    <a href="{{ url_for('feature_engineering') }}">Features</a>
+    <a href="{{ url_for('model') }}">Model</a>
+    <span class="nav-user">👤 {{ name }}</span>
+    <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+  </div>
+</nav>
 
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %}
-    <div class="flash-messages">
-      {% for category, message in messages %}
-      <div class="flash {{ category }}">{{ message }}</div>
-      {% endfor %}
+<div class="dashboard-wrapper">
+  <div class="dashboard-header">
+    <div class="dashboard-header-left">
+      <h1>Welcome back, {{ name }} 👋</h1>
+      <p>Your ML workspace is ready. Upload a dataset to begin the pipeline.</p>
     </div>
-    {% endif %} {% endwith %}
+    <div class="status-bar"><span class="status-dot"></span> System Online</div>
+  </div>
 
-    <nav class="navbar">
-      <a href="{{ url_for('home') }}" class="logo">PipelineX AI</a>
-      <div class="nav-links">
-        <a href="{{ url_for('upload') }}">Upload</a>
-        <a href="{{ url_for('summary') }}">Summary</a>
-        <a href="{{ url_for('eda') }}">EDA</a>
-        <a href="{{ url_for('cleaning') }}">Cleaning</a>
-        <a href="{{ url_for('feature_engineering') }}">Features</a>
-        <a href="{{ url_for('model') }}">Model</a>
-        <span class="nav-user">👤 {{ name }}</span>
-        <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
-      </div>
-    </nav>
+  <div class="pipeline-flow">
+    <span class="step done">✅ Auth</span><span class="arrow">→</span>
+    <span class="step ready">📂 Upload</span><span class="arrow">→</span>
+    <span class="step ready">📋 Summary</span><span class="arrow">→</span>
+    <span class="step ready">📊 EDA</span><span class="arrow">→</span>
+    <span class="step ready">🧹 Cleaning</span><span class="arrow">→</span>
+    <span class="step ready">⚙️ Preprocessing</span><span class="arrow">→</span>
+    <span class="step ready">🤖 Training</span><span class="arrow">→</span>
+    <span class="step ready">💾 Export</span>
+  </div>
 
-    <div class="dashboard-wrapper">
-      <!-- ── Header ── -->
-      <div class="dashboard-header">
-        <div class="dashboard-header-left">
-          <h1>Welcome back, {{ name }} 👋</h1>
-          <p>
-            Your ML workspace is ready. Upload a dataset to begin the pipeline.
-          </p>
-        </div>
-        <div class="status-bar">
-          <span class="status-dot"></span> System Online
-        </div>
-      </div>
+  <div class="module-grid">
+    <div class="module-card active"><a href="{{ url_for('upload') }}"><span class="icon">📂</span><h3>Upload Dataset</h3><p>Upload your dataset in CSV, Excel, JSON, XML, or HTML format. Supported up to 50 MB.</p><span class="badge">▶ Start Here</span></a></div>
+    <div class="module-card active"><a href="{{ url_for('summary') }}"><span class="icon">📋</span><h3>Data Summary</h3><p>Key metrics, per-column info, missing value analysis, descriptive stats, and a 5-row preview.</p><span class="badge">▶ Live</span></a></div>
+    <div class="module-card active"><a href="{{ url_for('eda') }}"><span class="icon">📊</span><h3>EDA Module</h3><p>Histograms, bar charts for categorical columns, and a full feature correlation heatmap.</p><span class="badge">▶ Live</span></a></div>
+    <div class="module-card active"><a href="{{ url_for('cleaning') }}"><span class="icon">🧹</span><h3>Data Cleaning</h3><p>Missing value imputation (mean/median/mode), IQR outlier detection &amp; handling, duplicate removal, and string fixes.</p><span class="badge">▶ Live</span></a></div>
+    <div class="module-card active"><a href="{{ url_for('feature_engineering') }}"><span class="icon">⚙️</span><h3>Feature Engineering</h3><p>Label encoding for categorical columns and Standard Scaling (Mean=0, Std=1) for numeric features.</p><span class="badge">▶ Live</span></a></div>
+    <div class="module-card active"><a href="{{ url_for('model') }}"><span class="icon">🎯</span><h3>Problem &amp; Algorithm</h3><p>Select Classification, Regression, or Clustering — then pick the algorithm to train.</p><span class="badge">▶ Live</span></a></div>
+    <div class="module-card active"><a href="{{ url_for('train_model') }}"><span class="icon">🤖</span><h3>Train &amp; Evaluate</h3><p>Train with scikit-learn (80/20 split) and view accuracy, R², RMSE, or Silhouette metrics.</p><span class="badge">▶ Live</span></a></div>
+    <div class="module-card active"><a href="{{ url_for('export_model') }}"><span class="icon">💾</span><h3>Model Export</h3><p>Download your trained model as a <code style="color:var(--am);font-family:var(--font-mono);font-size:11px">.pkl</code> file via <code style="color:var(--am);font-family:var(--font-mono);font-size:11px">joblib.dump()</code>.</p><span class="badge">▶ Live</span></a></div>
+  </div>
+</div>
 
-      <!-- Pipeline flow indicator -->
-      <div class="pipeline-flow">
-        <span class="step done">✅ Auth</span>
-        <span class="arrow">→</span>
-        <span class="step ready">📂 Upload</span>
-        <span class="arrow">→</span>
-        <span class="step ready">📋 Summary</span>
-        <span class="arrow">→</span>
-        <span class="step ready">📊 EDA</span>
-        <span class="arrow">→</span>
-        <span class="step ready">🧹 Cleaning</span>
-        <span class="arrow">→</span>
-        <span class="step ready">⚙️ Preprocessing</span>
-        <span class="arrow">→</span>
-        <span class="step ready">🤖 Training</span>
-        <span class="arrow">→</span>
-        <span class="step ready">💾 Export</span>
-      </div>
 
-      <div class="module-grid">
-        <!-- MODULE 2 & 3 — ACTIVE -->
-        <div class="module-card active">
-          <a href="{{ url_for('upload') }}">
-            <span class="icon">📂</span>
-            <h3>Upload Dataset</h3>
-            <p>
-              Upload your dataset in CSV, Excel, JSON, XML, or HTML format.
-              Supported up to 50 MB.
-            </p>
-            <span class="badge">▶ Start Here</span>
-          </a>
-        </div>
-
-        <!-- MODULE 4 — ACTIVE -->
-        <div class="module-card active">
-          <a href="{{ url_for('summary') }}">
-            <span class="icon">📋</span>
-            <h3>Data Summary</h3>
-            <p>
-              Key metrics, per-column info, missing value analysis, descriptive
-              stats, and a 5-row preview.
-            </p>
-            <span class="badge">▶ Live</span>
-          </a>
-        </div>
-
-        <!-- MODULE 5 — ACTIVE -->
-        <div class="module-card active">
-          <a href="{{ url_for('eda') }}">
-            <span class="icon">📊</span>
-            <h3>EDA Module</h3>
-            <p>
-              Histograms, bar charts for categorical columns, and a full feature
-              correlation heatmap.
-            </p>
-            <span class="badge">▶ Live</span>
-          </a>
-        </div>
-
-        <!-- MODULE 6, 7, 8 — ACTIVE -->
-        <div class="module-card active">
-          <a href="{{ url_for('cleaning') }}">
-            <span class="icon">🧹</span>
-            <h3>Data Cleaning</h3>
-            <p>
-              Missing value imputation (mean/median/mode), IQR outlier detection
-              &amp; handling, duplicate removal, and string fixes.
-            </p>
-            <span class="badge">▶ Live</span>
-          </a>
-        </div>
-
-        <!-- MODULE 9 — ACTIVE -->
-        <div class="module-card active">
-          <a href="{{ url_for('feature_engineering') }}">
-            <span class="icon">⚙️</span>
-            <h3>Feature Engineering</h3>
-            <p>
-              Label encoding for categorical columns and Standard Scaling
-              (Mean=0, Std=1) for numeric features.
-            </p>
-            <span class="badge">▶ Live</span>
-          </a>
-        </div>
-
-        <!-- MODULE 10, 11 — ACTIVE -->
-        <div class="module-card active">
-          <a href="{{ url_for('model') }}">
-            <span class="icon">🎯</span>
-            <h3>Problem &amp; Algorithm</h3>
-            <p>
-              Select Classification, Regression, or Clustering — then pick the
-              algorithm to train.
-            </p>
-            <span class="badge">▶ Live</span>
-          </a>
-        </div>
-
-        <!-- MODULE 12, 13 — ACTIVE -->
-        <div class="module-card active">
-          <a href="{{ url_for('train_model') }}">
-            <span class="icon">🤖</span>
-            <h3>Train &amp; Evaluate</h3>
-            <p>
-              Train with scikit-learn (80/20 split) and view accuracy, R², RMSE,
-              or Silhouette metrics.
-            </p>
-            <span class="badge">▶ Live</span>
-          </a>
-        </div>
-
-        <!-- MODULE 14 — ACTIVE -->
-        <div class="module-card active">
-          <a href="{{ url_for('export_model') }}">
-            <span class="icon">💾</span>
-            <h3>Model Export</h3>
-            <p>
-              Download your trained model as a
-              <code
-                style="
-                  color: var(--primary);
-                  font-family: var(--font-mono);
-                  font-size: 11px;
-                "
-                >.pkl</code
-              >
-              file via
-              <code
-                style="
-                  color: var(--primary);
-                  font-family: var(--font-mono);
-                  font-size: 11px;
-                "
-                >joblib.dump()</code
-              >.
-            </p>
-            <span class="badge">▶ Live</span>
-          </a>
-        </div>
-      </div>
-      <!-- end module-grid -->
-    </div>
-    <!-- end dashboard-wrapper -->
-
-    <script>
-      (function () {
-        const canvas = document.getElementById("neural-canvas");
-        const ctx = canvas.getContext("2d");
-        let W,
-          H,
-          nodes = [];
-        function resize() {
-          W = canvas.width = window.innerWidth;
-          H = canvas.height = window.innerHeight;
-        }
-        resize();
-        window.addEventListener("resize", resize);
-        const count = Math.floor(
-          (window.innerWidth * window.innerHeight) / 12000,
-        );
-        for (let i = 0; i < count; i++)
-          nodes.push({
-            x: Math.random() * window.innerWidth,
-            y: Math.random() * window.innerHeight,
-            vx: (Math.random() - 0.5) * 0.35,
-            vy: (Math.random() - 0.5) * 0.35,
-            r: Math.random() * 2 + 1.5,
-            pulse: Math.random() * Math.PI * 2,
-            color: Math.random() > 0.5 ? "0,229,255" : "124,58,237",
-          });
-        function draw() {
-          ctx.clearRect(0, 0, W, H);
-          nodes.forEach((n) => {
-            n.x += n.vx;
-            n.y += n.vy;
-            n.pulse += 0.018;
-            if (n.x < 0 || n.x > W) n.vx *= -1;
-            if (n.y < 0 || n.y > H) n.vy *= -1;
-            const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 4);
-            g.addColorStop(0, `rgba(${n.color},0.9)`);
-            g.addColorStop(1, `rgba(${n.color},0)`);
-            ctx.beginPath();
-            ctx.arc(n.x, n.y, n.r + Math.sin(n.pulse) * 0.6, 0, Math.PI * 2);
-            ctx.fillStyle = g;
-            ctx.fill();
-          });
-          for (let i = 0; i < nodes.length; i++)
-            for (let j = i + 1; j < nodes.length; j++) {
-              const a = nodes[i],
-                b = nodes[j],
-                dx = a.x - b.x,
-                dy = a.y - b.y,
-                d = Math.sqrt(dx * dx + dy * dy);
-              if (d < 130) {
-                ctx.beginPath();
-                ctx.moveTo(a.x, a.y);
-                ctx.lineTo(b.x, b.y);
-                ctx.strokeStyle = `rgba(0,229,255,${(1 - d / 130) * 0.3})`;
-                ctx.lineWidth = 0.6;
-                ctx.stroke();
-              }
-            }
-          requestAnimationFrame(draw);
-        }
-        draw();
-      })();
-      (function () {
-        const tags = [
-          "pipeline.fit(X)",
-          "model.predict(X_test)",
-          "val_loss: 0.042",
-          "accuracy: 96.8%",
-          "GridSearchCV",
-          "cross_val_score()",
-          "confusion_matrix()",
-          "StandardScaler()",
-          "RandomForest(n=100)",
-          "KMeans(k=5)",
-          "torch.backward()",
-          "optimizer.step()",
-          "TF-IDF",
-          "dropout(0.3)",
-          "sigmoid(x)",
-        ];
-        const c = document.getElementById("ml-tags");
-        tags.forEach((t) => {
-          const el = document.createElement("div");
-          el.className = "ml-tag";
-          el.textContent = t;
-          el.style.left = 3 + Math.random() * 92 + "%";
-          el.style.animationDuration = 16 + Math.random() * 24 + "s";
-          el.style.animationDelay = -(Math.random() * 30) + "s";
-          c.appendChild(el);
-        });
-      })();
-    </script>
-  </body>
-</html>
+</body></html>
