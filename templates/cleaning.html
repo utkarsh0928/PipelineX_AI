@@ -6,9 +6,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body class="has-terminal">
 <div class="bg-base"></div><div class="bg-dots"></div><div class="bg-scanlines"></div>
-
 {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="flash-messages">{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
 
 <nav class="navbar">
@@ -34,7 +33,6 @@
     <div class="stat-card {% if duplicate_count > 0 %}warn{% else %}good{% endif %}"><div class="s-label">DUPLICATE ROWS</div><div class="s-value">{{ duplicate_count }}</div><div class="s-unit">{{ 'rows to remove' if duplicate_count > 0 else 'no duplicates ✓' }}</div></div>
   </div>
 
-  <!-- Module 6 -->
   <div class="section-title">Missing Value Imputation <span class="stag">Module 6</span></div>
   {% if missing_stats %}
   <div class="table-scroll" style="margin-bottom:16px">
@@ -43,7 +41,7 @@
   <div class="action-grid">
     <div class="action-card">
       <span class="ac-icon">🩹</span><div class="ac-title">Impute Missing Values</div>
-      <div class="ac-desc">Fill missing values automatically.<br><span style="font-family:var(--font-mono);color:var(--am);font-size:12px">auto</span> — numeric → mean, categorical → mode<br><span style="font-family:var(--font-mono);color:var(--am);font-size:12px">median</span> — numeric → median, categorical → mode</div>
+      <div class="ac-desc">Fill missing values automatically.<br><span style="font-family:var(--font-mono);color:var(--vi-hi);font-size:12px">auto</span> — numeric → mean, categorical → mode<br><span style="font-family:var(--font-mono);color:var(--vi-hi);font-size:12px">median</span> — numeric → median, categorical → mode</div>
       <form method="POST" action="{{ url_for('cleaning') }}"><input type="hidden" name="action" value="impute">
         <div class="strategy-row"><label for="is">Strategy:</label><select name="strategy" id="is" class="strategy-select"><option value="auto">auto (Mean / Mode)</option><option value="median">median (Median / Mode)</option></select></div>
         <button type="submit" class="ac-btn ac-btn-primary">⚡ Apply Imputation</button>
@@ -52,7 +50,6 @@
   </div>
   {% else %}<div class="all-clean">✅ &nbsp;No missing values found — dataset is complete.</div>{% endif %}
 
-  <!-- Module 7 -->
   <div class="section-title" style="margin-top:36px">Outlier Detection &amp; Handling <span class="stag">Module 7 · IQR Method</span></div>
   {% if outlier_stats %}
   <div class="table-scroll" style="margin-bottom:16px">
@@ -61,7 +58,7 @@
   <div class="action-grid">
     <div class="action-card">
       <span class="ac-icon">📉</span><div class="ac-title">Handle Outliers</div>
-      <div class="ac-desc">Choose how to deal with detected outliers.<br><span style="font-family:var(--font-mono);color:var(--am);font-size:12px">remove</span> — drops rows where any numeric col has an outlier<br><span style="font-family:var(--font-mono);color:var(--am);font-size:12px">cap</span> — Winsorizes values to Q1 − 1.5·IQR / Q3 + 1.5·IQR bounds</div>
+      <div class="ac-desc">Choose how to deal with detected outliers.<br><span style="font-family:var(--font-mono);color:var(--vi-hi);font-size:12px">remove</span> — drops rows where any numeric col has an outlier<br><span style="font-family:var(--font-mono);color:var(--vi-hi);font-size:12px">cap</span> — Winsorizes values to Q1 − 1.5·IQR / Q3 + 1.5·IQR bounds</div>
       <form method="POST" action="{{ url_for('cleaning') }}"><input type="hidden" name="action" value="outliers">
         <div class="strategy-row"><label for="os">Strategy:</label><select name="strategy" id="os" class="strategy-select"><option value="remove">remove (drop rows)</option><option value="cap">cap (Winsorize)</option></select></div>
         <button type="submit" class="ac-btn ac-btn-warn">📉 Handle Outliers</button>
@@ -70,19 +67,18 @@
   </div>
   {% else %}<div class="all-clean">✅ &nbsp;No outliers detected via IQR method.</div>{% endif %}
 
-  <!-- Module 8 -->
   <div class="section-title" style="margin-top:36px">Duplicate Removal &amp; Consistency Fixes <span class="stag">Module 8</span></div>
   <div class="action-grid">
     <div class="action-card">
       <span class="ac-icon">🗂️</span><div class="ac-title">Remove Duplicate Rows</div>
-      <div class="ac-desc">Calls <span style="font-family:var(--font-mono);color:var(--am);font-size:12px">df.drop_duplicates()</span> to remove exact duplicate rows.{% if duplicate_count > 0 %}<br><br><span style="color:#f87171;font-family:var(--font-mono);font-size:12px">⚠ {{ duplicate_count }} duplicate row(s) found.</span>{% else %}<br><br><span style="color:#6ee7b7;font-family:var(--font-mono);font-size:12px">✓ No duplicates detected.</span>{% endif %}</div>
+      <div class="ac-desc">Calls <span style="font-family:var(--font-mono);color:var(--vi-hi);font-size:12px">df.drop_duplicates()</span> to remove exact duplicate rows.{% if duplicate_count > 0 %}<br><br><span style="color:#f87171;font-family:var(--font-mono);font-size:12px">⚠ {{ duplicate_count }} duplicate row(s) found.</span>{% else %}<br><br><span style="color:#6ee7b7;font-family:var(--font-mono);font-size:12px">✓ No duplicates detected.</span>{% endif %}</div>
       <form method="POST" action="{{ url_for('cleaning') }}"><input type="hidden" name="action" value="duplicates"><input type="hidden" name="strategy" value="">
         {% if duplicate_count == 0 %}<button type="submit" class="ac-btn ac-btn-danger" style="opacity:.5;cursor:not-allowed" disabled>{% else %}<button type="submit" class="ac-btn ac-btn-danger">{% endif %}🗑️ Remove Duplicates</button>
       </form>
     </div>
     <div class="action-card">
       <span class="ac-icon">✂️</span><div class="ac-title">Fix String Inconsistencies</div>
-      <div class="ac-desc">Strips leading/trailing whitespace from all string columns using <span style="font-family:var(--font-mono);color:var(--am);font-size:12px">str.strip()</span>. Helps normalise text data before encoding or analysis.</div>
+      <div class="ac-desc">Strips leading/trailing whitespace from all string columns using <span style="font-family:var(--font-mono);color:var(--vi-hi);font-size:12px">str.strip()</span>. Helps normalise text data before encoding or analysis.</div>
       <form method="POST" action="{{ url_for('cleaning') }}"><input type="hidden" name="action" value="fix_inconsistent"><input type="hidden" name="strategy" value="">
         <button type="submit" class="ac-btn ac-btn-primary">✂️ Fix Inconsistencies</button>
       </form>
@@ -96,5 +92,66 @@
   </div>
 </div>
 
+<div class="term-panel">
+  <div class="term-bar">
+    <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+    <span class="term-bar-title">notebook — data cleaning</span>
+    <span class="term-module-badge">Module 6–8</span>
+  </div>
+  <div class="term-body">
 
+{% if missing_stats %}
+    <div class="term-cell-label">In [1] · impute — {{ missing_stats | length }} column(s) with nulls</div>
+    <code class="term-code">{% for col, count in missing_stats.items() %}<span class="term-line" data-d="38"><span class="tc"># {{ col }}: {{ count }} missing values</span></span>
+{% endfor %}<span class="term-line" data-d="15"></span>
+<span class="term-line" data-d="55"><span class="tv">num_cols</span> = <span class="tv">df</span>.<span class="tf">select_dtypes</span>(include=[<span class="ts">'number'</span>]).columns</span>
+<span class="term-line" data-d="55"><span class="tv">cat_cols</span> = <span class="tv">df</span>.<span class="tf">select_dtypes</span>(exclude=[<span class="ts">'number'</span>]).columns</span>
+<span class="term-line" data-d="15"></span>
+<span class="term-line" data-d="50"><span class="tk">for</span> <span class="tv">col</span> <span class="tk">in</span> <span class="tv">num_cols</span>:</span>
+<span class="term-line" data-d="55">    <span class="tv">df</span>[<span class="tv">col</span>] = <span class="tv">df</span>[<span class="tv">col</span>].<span class="tf">fillna</span>(<span class="tv">df</span>[<span class="tv">col</span>].<span class="tf">mean</span>())</span>
+<span class="term-line" data-d="50"><span class="tk">for</span> <span class="tv">col</span> <span class="tk">in</span> <span class="tv">cat_cols</span>:</span>
+<span class="term-line" data-d="55">    <span class="tv">df</span>[<span class="tv">col</span>] = <span class="tv">df</span>[<span class="tv">col</span>].<span class="tf">fillna</span>(<span class="tv">df</span>[<span class="tv">col</span>].<span class="tf">mode</span>()[<span class="tn">0</span>])</span>
+</code>{% endif %}
+
+{% if outlier_stats %}
+    <div class="term-cell-label">In [2] · IQR outliers — {{ outlier_stats | length }} column(s)</div>
+    <code class="term-code">{% for col, count in outlier_stats.items() %}<span class="term-line" data-d="38"><span class="tc"># {{ col }}: {{ count }} outlier rows</span></span>
+<span class="term-line" data-d="50"><span class="tv">Q1</span> = <span class="tv">df</span>[<span class="ts">'{{ col }}'</span>].<span class="tf">quantile</span>(<span class="tn">0.25</span>)</span>
+<span class="term-line" data-d="50"><span class="tv">Q3</span> = <span class="tv">df</span>[<span class="ts">'{{ col }}'</span>].<span class="tf">quantile</span>(<span class="tn">0.75</span>)</span>
+<span class="term-line" data-d="45"><span class="tv">IQR</span> = <span class="tv">Q3</span> - <span class="tv">Q1</span></span>
+<span class="term-line" data-d="55"><span class="tv">df</span> = <span class="tv">df</span>[(<span class="tv">df</span>[<span class="ts">'{{ col }}'</span>] &gt;= <span class="tv">Q1</span> - <span class="tn">1.5</span>*<span class="tv">IQR</span>) &amp;</span>
+<span class="term-line" data-d="55">         (<span class="tv">df</span>[<span class="ts">'{{ col }}'</span>] &lt;= <span class="tv">Q3</span> + <span class="tn">1.5</span>*<span class="tv">IQR</span>)]</span>
+{% endfor %}</code>{% endif %}
+
+    <div class="term-cell-label">In [3] · duplicates — {{ duplicate_count }} found</div>
+    <code class="term-code"><span class="term-line" data-d="45"><span class="tc"># {{ duplicate_count }} duplicate row(s) in dataset</span></span>
+<span class="term-line" data-d="55"><span class="tv">df</span> = <span class="tv">df</span>.<span class="tf">drop_duplicates</span>()</span>
+<span class="term-line" data-d="55"><span class="tf">print</span>(<span class="ts">f'After clean: {df.shape}'</span>)</span>
+</code>
+
+    <div class="term-cell-label">In [4] · strip string whitespace</div>
+    <code class="term-code"><span class="term-line" data-d="50"><span class="tk">for</span> <span class="tv">col</span> <span class="tk">in</span> <span class="tv">df</span>.<span class="tf">select_dtypes</span>(<span class="ts">'object'</span>).columns:</span>
+<span class="term-line" data-d="55">    <span class="tv">df</span>[<span class="tv">col</span>] = <span class="tv">df</span>[<span class="tv">col</span>].<span class="tf">str</span>.<span class="tf">strip</span>()</span>
+</code>
+
+  </div>
+  <div class="term-foot">
+    <span class="term-foot-hint">{{ missing_stats | length }} imputed · {{ outlier_stats | length }} outlier cols · {{ duplicate_count }} dupes</span>
+    <span class="term-foot-run">executed</span>
+  </div>
+</div><script>
+(function(){
+  var lines = document.querySelectorAll('.term-line');
+  var delay = 0;
+  lines.forEach(function(ln){
+    var ms = parseInt(ln.dataset.d || 60);
+    setTimeout(function(){ ln.classList.add('visible'); }, delay);
+    delay += ms;
+  });
+  var blocks = document.querySelectorAll('.term-code');
+  if(blocks.length){ setTimeout(function(){ blocks[blocks.length-1].classList.add('typing'); }, delay+100); }
+  var body = document.querySelector('.term-body');
+  if(body){ var i=setInterval(function(){ body.scrollTop=body.scrollHeight; },80); setTimeout(function(){ clearInterval(i); },delay+1500); }
+})();
+</script>
 </body></html>

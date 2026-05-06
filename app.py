@@ -253,9 +253,12 @@ def eda():
         flash('Please upload a dataset first.', 'error')
         return redirect(url_for('upload'))
 
-    plots    = generate_visualizations(df)
-    filename = session.get('filename', 'dataset')
-    return render_template('eda.html', plots=plots, filename=filename)
+    plots        = generate_visualizations(df)
+    filename     = session.get('filename', 'dataset')
+    numeric_cols = list(df.select_dtypes(include=['number']).columns)
+    cat_cols     = list(df.select_dtypes(include=['object','category']).columns)
+    return render_template('eda.html', plots=plots, filename=filename,
+                           numeric_cols=numeric_cols, cat_cols=cat_cols)
 
 # =============================================================
 # MODULE 6, 7, 8 — Data Cleaning

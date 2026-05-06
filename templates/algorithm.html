@@ -6,9 +6,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body class="has-terminal">
 <div class="bg-base"></div><div class="bg-dots"></div><div class="bg-scanlines"></div>
-
 {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="flash-messages">{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
 
 <nav class="navbar">
@@ -22,11 +21,10 @@
 
 <div class="algo-page">
   <div class="algo-card">
+    <p style="font-family:var(--font-mono);font-size:11px;color:var(--vi-hi);margin-bottom:14px;letter-spacing:.1em">// MODULE 11 — ALGORITHM SELECTION</p>
     <h2>Select Algorithm</h2>
     <p class="sub">session['algorithm'] → train_model_logic()</p>
-
     <span class="problem-badge badge-{{ problem_type }}">{% if problem_type == 'classification' %}🎯{% elif problem_type == 'regression' %}📈{% else %}🔵{% endif %} {{ problem_type | capitalize }}</span>
-
     <form method="POST" action="{{ url_for('algorithm_selection') }}">
       <div class="algo-list">
         {% if problem_type == 'classification' %}
@@ -45,5 +43,83 @@
   </div>
 </div>
 
+<div class="term-panel">
+  <div class="term-bar">
+    <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+    <span class="term-bar-title">notebook — {{ problem_type }} algorithm</span>
+    <span class="term-module-badge">Module 11</span>
+  </div>
+  <div class="term-body">
+
+{% if problem_type == 'classification' %}
+    <div class="term-cell-label">In [1] · option A — Logistic Regression</div>
+    <code class="term-code"><span class="term-line" data-d="45"><span class="tk">from</span> <span class="tv">sklearn.linear_model</span> <span class="tk">import</span> LogisticRegression</span>
+<span class="term-line" data-d="10"></span>
+<span class="term-line" data-d="55"><span class="tv">model</span> = <span class="tf">LogisticRegression</span>(max_iter=<span class="tn">1000</span>)</span>
+<span class="term-line" data-d="55"><span class="tv">model</span>.<span class="tf">fit</span>(<span class="tv">X_train</span>, <span class="tv">y_train</span>)</span>
+<span class="term-line" data-d="55"><span class="tv">y_pred</span> = <span class="tv">model</span>.<span class="tf">predict</span>(<span class="tv">X_test</span>)</span>
+<span class="term-line" data-d="10"></span>
+<span class="term-line" data-d="45"><span class="tk">from</span> <span class="tv">sklearn.metrics</span> <span class="tk">import</span> accuracy_score</span>
+<span class="term-line" data-d="55"><span class="tf">print</span>(accuracy_score(<span class="tv">y_test</span>, <span class="tv">y_pred</span>))</span>
+</code>
+
+    <div class="term-cell-label">In [2] · option B — Random Forest</div>
+    <code class="term-code"><span class="term-line" data-d="45"><span class="tk">from</span> <span class="tv">sklearn.ensemble</span> <span class="tk">import</span> RandomForestClassifier</span>
+<span class="term-line" data-d="10"></span>
+<span class="term-line" data-d="55"><span class="tv">model</span> = <span class="tf">RandomForestClassifier</span>(n_estimators=<span class="tn">100</span>)</span>
+<span class="term-line" data-d="55"><span class="tv">model</span>.<span class="tf">fit</span>(<span class="tv">X_train</span>, <span class="tv">y_train</span>)</span>
+<span class="term-line" data-d="55"><span class="tv">y_pred</span> = <span class="tv">model</span>.<span class="tf">predict</span>(<span class="tv">X_test</span>)</span>
+<span class="term-line" data-d="55"><span class="tf">print</span>(accuracy_score(<span class="tv">y_test</span>, <span class="tv">y_pred</span>))</span>
+</code>{% elif problem_type == 'regression' %}
+    <div class="term-cell-label">In [1] · option A — Linear Regression</div>
+    <code class="term-code"><span class="term-line" data-d="45"><span class="tk">from</span> <span class="tv">sklearn.linear_model</span> <span class="tk">import</span> LinearRegression</span>
+<span class="term-line" data-d="45"><span class="tk">from</span> <span class="tv">sklearn.metrics</span> <span class="tk">import</span> r2_score, mean_squared_error</span>
+<span class="term-line" data-d="40"><span class="tk">import</span> <span class="tv">numpy</span> <span class="tk">as</span> <span class="tv">np</span></span>
+<span class="term-line" data-d="10"></span>
+<span class="term-line" data-d="55"><span class="tv">model</span> = <span class="tf">LinearRegression</span>()</span>
+<span class="term-line" data-d="55"><span class="tv">model</span>.<span class="tf">fit</span>(<span class="tv">X_train</span>, <span class="tv">y_train</span>)</span>
+<span class="term-line" data-d="55"><span class="tv">y_pred</span> = <span class="tv">model</span>.<span class="tf">predict</span>(<span class="tv">X_test</span>)</span>
+<span class="term-line" data-d="55"><span class="tf">print</span>(<span class="ts">f'R²: {r2_score(y_test, y_pred):.4f}'</span>)</span>
+<span class="term-line" data-d="55"><span class="tf">print</span>(<span class="ts">f'RMSE: {np.sqrt(mean_squared_error(y_test, y_pred)):.4f}'</span>)</span>
+</code>
+
+    <div class="term-cell-label">In [2] · option B — Decision Tree</div>
+    <code class="term-code"><span class="term-line" data-d="45"><span class="tk">from</span> <span class="tv">sklearn.tree</span> <span class="tk">import</span> DecisionTreeRegressor</span>
+<span class="term-line" data-d="10"></span>
+<span class="term-line" data-d="55"><span class="tv">model</span> = <span class="tf">DecisionTreeRegressor</span>()</span>
+<span class="term-line" data-d="55"><span class="tv">model</span>.<span class="tf">fit</span>(<span class="tv">X_train</span>, <span class="tv">y_train</span>)</span>
+<span class="term-line" data-d="55"><span class="tv">y_pred</span> = <span class="tv">model</span>.<span class="tf">predict</span>(<span class="tv">X_test</span>)</span>
+<span class="term-line" data-d="55"><span class="tf">print</span>(<span class="ts">f'R²: {r2_score(y_test, y_pred):.4f}'</span>)</span>
+</code>{% elif problem_type == 'clustering' %}
+    <div class="term-cell-label">In [1] · K-Means (k=3, unsupervised)</div>
+    <code class="term-code"><span class="term-line" data-d="45"><span class="tk">from</span> <span class="tv">sklearn.cluster</span> <span class="tk">import</span> KMeans</span>
+<span class="term-line" data-d="45"><span class="tk">from</span> <span class="tv">sklearn.metrics</span> <span class="tk">import</span> silhouette_score</span>
+<span class="term-line" data-d="10"></span>
+<span class="term-line" data-d="60"><span class="tv">model</span> = <span class="tf">KMeans</span>(n_clusters=<span class="tn">3</span>, random_state=<span class="tn">42</span>, n_init=<span class="ts">'auto'</span>)</span>
+<span class="term-line" data-d="55"><span class="tv">model</span>.<span class="tf">fit</span>(<span class="tv">X</span>)  <span class="tc"># no y — unsupervised</span></span>
+<span class="term-line" data-d="55"><span class="tv">score</span> = <span class="tf">silhouette_score</span>(<span class="tv">X</span>, <span class="tv">model</span>.labels_)</span>
+<span class="term-line" data-d="55"><span class="tf">print</span>(<span class="ts">f'Silhouette: {score:.4f}'</span>)</span>
+</code>{% endif %}
+
+  </div>
+  <div class="term-foot">
+    <span class="term-foot-hint">problem: {{ problem_type }} · pick one option above</span>
+    <span class="term-foot-run">ready</span>
+  </div>
+</div><script>
+(function(){
+  var lines = document.querySelectorAll('.term-line');
+  var delay = 0;
+  lines.forEach(function(ln){
+    var ms = parseInt(ln.dataset.d || 60);
+    setTimeout(function(){ ln.classList.add('visible'); }, delay);
+    delay += ms;
+  });
+  var blocks = document.querySelectorAll('.term-code');
+  if(blocks.length){ setTimeout(function(){ blocks[blocks.length-1].classList.add('typing'); }, delay+100); }
+  var body = document.querySelector('.term-body');
+  if(body){ var i=setInterval(function(){ body.scrollTop=body.scrollHeight; },80); setTimeout(function(){ clearInterval(i); },delay+1500); }
+})();
+</script>
 
 </body></html>

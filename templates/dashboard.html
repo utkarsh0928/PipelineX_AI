@@ -6,9 +6,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body class="has-terminal">
 <div class="bg-base"></div><div class="bg-dots"></div><div class="bg-scanlines"></div>
-
 {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="flash-messages">{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
 
 <nav class="navbar">
@@ -53,9 +52,100 @@
     <div class="module-card active"><a href="{{ url_for('feature_engineering') }}"><span class="icon">⚙️</span><h3>Feature Engineering</h3><p>Label encoding for categorical columns and Standard Scaling (Mean=0, Std=1) for numeric features.</p><span class="badge">▶ Live</span></a></div>
     <div class="module-card active"><a href="{{ url_for('model') }}"><span class="icon">🎯</span><h3>Problem &amp; Algorithm</h3><p>Select Classification, Regression, or Clustering — then pick the algorithm to train.</p><span class="badge">▶ Live</span></a></div>
     <div class="module-card active"><a href="{{ url_for('train_model') }}"><span class="icon">🤖</span><h3>Train &amp; Evaluate</h3><p>Train with scikit-learn (80/20 split) and view accuracy, R², RMSE, or Silhouette metrics.</p><span class="badge">▶ Live</span></a></div>
-    <div class="module-card active"><a href="{{ url_for('export_model') }}"><span class="icon">💾</span><h3>Model Export</h3><p>Download your trained model as a <code style="color:var(--am);font-family:var(--font-mono);font-size:11px">.pkl</code> file via <code style="color:var(--am);font-family:var(--font-mono);font-size:11px">joblib.dump()</code>.</p><span class="badge">▶ Live</span></a></div>
+    <div class="module-card active"><a href="{{ url_for('export_model') }}"><span class="icon">💾</span><h3>Model Export</h3><p>Download your trained model as a <code style="color:var(--vi-hi);font-family:var(--font-mono);font-size:11px">.pkl</code> file via <code style="color:var(--vi-hi);font-family:var(--font-mono);font-size:11px">joblib.dump()</code>.</p><span class="badge">▶ Live</span></a></div>
   </div>
 </div>
 
+<div class="term-panel">
+  <div class="term-bar">
+    <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+    <span class="term-bar-title">pipeline_full.ipynb — complete ML flow</span>
+    <span class="term-module-badge">All Modules</span>
+  </div>
+  <div class="term-body">
 
+    <div class="term-cell-label">In [1] · imports — everything you need</div>
+    <code class="term-code"><span class="term-line" data-d="38"><span class="tk">import</span> <span class="tv">pandas</span> <span class="tk">as</span> <span class="tv">pd</span></span>
+<span class="term-line" data-d="38"><span class="tk">import</span> <span class="tv">numpy</span> <span class="tk">as</span> <span class="tv">np</span></span>
+<span class="term-line" data-d="38"><span class="tk">import</span> <span class="tv">matplotlib.pyplot</span> <span class="tk">as</span> <span class="tv">plt</span></span>
+<span class="term-line" data-d="38"><span class="tk">import</span> <span class="tv">seaborn</span> <span class="tk">as</span> <span class="tv">sns</span></span>
+<span class="term-line" data-d="38"><span class="tk">from</span> <span class="tv">sklearn.preprocessing</span> <span class="tk">import</span> (</span>
+<span class="term-line" data-d="38">    LabelEncoder, StandardScaler)</span>
+<span class="term-line" data-d="38"><span class="tk">from</span> <span class="tv">sklearn.model_selection</span> <span class="tk">import</span> train_test_split</span>
+<span class="term-line" data-d="38"><span class="tk">from</span> <span class="tv">sklearn.metrics</span> <span class="tk">import</span> accuracy_score</span>
+<span class="term-line" data-d="38"><span class="tk">import</span> <span class="tv">joblib</span></span>
+</code>
+
+    <div class="term-cell-label">In [2] · Module 2–3 · load dataset</div>
+    <code class="term-code"><span class="term-line" data-d="45"><span class="tv">df</span> = pd.<span class="tf">read_csv</span>(<span class="ts">'your_file.csv'</span>)</span>
+<span class="term-line" data-d="45"><span class="tf">print</span>(<span class="ts">f"Loaded: {df.shape[0]} rows × {df.shape[1]} cols"</span>)</span>
+</code>
+
+    <div class="term-cell-label">In [3] · Module 4 · summary</div>
+    <code class="term-code"><span class="term-line" data-d="42"><span class="tf">print</span>(<span class="tv">df</span>.dtypes)</span>
+<span class="term-line" data-d="42"><span class="tf">print</span>(<span class="tv">df</span>.<span class="tf">isnull</span>().<span class="tf">sum</span>())</span>
+<span class="term-line" data-d="42"><span class="tv">df</span>.<span class="tf">describe</span>()</span>
+</code>
+
+    <div class="term-cell-label">In [4] · Module 5 · EDA</div>
+    <code class="term-code"><span class="term-line" data-d="42">plt.style.<span class="tf">use</span>(<span class="ts">'dark_background'</span>)</span>
+<span class="term-line" data-d="42"><span class="tk">for</span> <span class="tv">col</span> <span class="tk">in</span> <span class="tv">df</span>.<span class="tf">select_dtypes</span>(<span class="ts">'number'</span>).columns:</span>
+<span class="term-line" data-d="42">    sns.<span class="tf">histplot</span>(<span class="tv">df</span>[<span class="tv">col</span>].<span class="tf">dropna</span>(), kde=<span class="tk">True</span>)</span>
+<span class="term-line" data-d="38">    plt.<span class="tf">show</span>()</span>
+<span class="term-line" data-d="42"><span class="tv">corr</span> = <span class="tv">df</span>.<span class="tf">select_dtypes</span>(<span class="ts">'number'</span>).<span class="tf">corr</span>()</span>
+<span class="term-line" data-d="42">sns.<span class="tf">heatmap</span>(<span class="tv">corr</span>, annot=<span class="tk">True</span>, cmap=<span class="ts">'coolwarm'</span>)</span>
+</code>
+
+    <div class="term-cell-label">In [5] · Module 6–8 · clean</div>
+    <code class="term-code"><span class="term-line" data-d="38"><span class="tc"># Impute → drop dupes → strip strings</span></span>
+<span class="term-line" data-d="42"><span class="tk">for</span> <span class="tv">col</span> <span class="tk">in</span> <span class="tv">df</span>.<span class="tf">select_dtypes</span>(<span class="ts">'number'</span>).columns:</span>
+<span class="term-line" data-d="42">    <span class="tv">df</span>[<span class="tv">col</span>].<span class="tf">fillna</span>(<span class="tv">df</span>[<span class="tv">col</span>].<span class="tf">mean</span>(), inplace=<span class="tk">True</span>)</span>
+<span class="term-line" data-d="40"><span class="tv">df</span> = <span class="tv">df</span>.<span class="tf">drop_duplicates</span>()</span>
+</code>
+
+    <div class="term-cell-label">In [6] · Module 9 · feature engineering</div>
+    <code class="term-code"><span class="term-line" data-d="40"><span class="tv">le</span> = <span class="tf">LabelEncoder</span>()</span>
+<span class="term-line" data-d="42"><span class="tk">for</span> <span class="tv">col</span> <span class="tk">in</span> <span class="tv">df</span>.<span class="tf">select_dtypes</span>(<span class="ts">'object'</span>).columns:</span>
+<span class="term-line" data-d="42">    <span class="tv">df</span>[<span class="tv">col</span>] = <span class="tv">le</span>.<span class="tf">fit_transform</span>(<span class="tv">df</span>[<span class="tv">col</span>].<span class="tf">astype</span>(<span class="ts">str</span>))</span>
+<span class="term-line" data-d="42"><span class="tv">num_cols</span> = <span class="tv">df</span>.<span class="tf">select_dtypes</span>(<span class="ts">'number'</span>).columns</span>
+<span class="term-line" data-d="42"><span class="tv">df</span>[<span class="tv">num_cols</span>] = <span class="tf">StandardScaler</span>().<span class="tf">fit_transform</span>(<span class="tv">df</span>[<span class="tv">num_cols</span>])</span>
+</code>
+
+    <div class="term-cell-label">In [7] · Module 10–13 · train &amp; evaluate</div>
+    <code class="term-code"><span class="term-line" data-d="42"><span class="tv">X</span> = <span class="tv">df</span>.<span class="tf">drop</span>(columns=[<span class="ts">'target'</span>])</span>
+<span class="term-line" data-d="40"><span class="tv">y</span> = <span class="tv">df</span>[<span class="ts">'target'</span>]</span>
+<span class="term-line" data-d="42"><span class="tv">X_tr</span>, <span class="tv">X_te</span>, <span class="tv">y_tr</span>, <span class="tv">y_te</span> = <span class="tf">train_test_split</span>(</span>
+<span class="term-line" data-d="40">    <span class="tv">X</span>, <span class="tv">y</span>, test_size=<span class="tn">0.2</span>, random_state=<span class="tn">42</span>)</span>
+<span class="term-line" data-d="10"></span>
+<span class="term-line" data-d="40"><span class="tk">from</span> <span class="tv">sklearn.ensemble</span> <span class="tk">import</span> RandomForestClassifier</span>
+<span class="term-line" data-d="42"><span class="tv">model</span> = <span class="tf">RandomForestClassifier</span>(n_estimators=<span class="tn">100</span>)</span>
+<span class="term-line" data-d="40"><span class="tv">model</span>.<span class="tf">fit</span>(<span class="tv">X_tr</span>, <span class="tv">y_tr</span>)</span>
+<span class="term-line" data-d="42"><span class="tf">print</span>(accuracy_score(<span class="tv">y_te</span>, <span class="tv">model</span>.<span class="tf">predict</span>(<span class="tv">X_te</span>)))</span>
+</code>
+
+    <div class="term-cell-label">In [8] · Module 14 · export</div>
+    <code class="term-code"><span class="term-line" data-d="42">joblib.<span class="tf">dump</span>(<span class="tv">model</span>, <span class="ts">'model_trained.pkl'</span>)</span>
+<span class="term-line" data-d="42"><span class="tout"># Load anywhere: joblib.load('model_trained.pkl')</span></span>
+</code>
+
+  </div>
+  <div class="term-foot">
+    <span class="term-foot-hint">full pipeline · upload a dataset to get real code</span>
+    <span class="term-foot-run">ready</span>
+  </div>
+</div><script>
+(function(){
+  var lines = document.querySelectorAll('.term-line');
+  var delay = 0;
+  lines.forEach(function(ln){
+    var ms = parseInt(ln.dataset.d || 50);
+    setTimeout(function(){ ln.classList.add('visible'); }, delay);
+    delay += ms;
+  });
+  var blocks = document.querySelectorAll('.term-code');
+  if(blocks.length){ setTimeout(function(){ blocks[blocks.length-1].classList.add('typing'); }, delay+100); }
+  var body = document.querySelector('.term-body');
+  if(body){ var i=setInterval(function(){ body.scrollTop=body.scrollHeight; },80); setTimeout(function(){ clearInterval(i); },delay+1500); }
+})();
+</script>
 </body></html>

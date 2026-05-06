@@ -6,9 +6,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body class="has-terminal">
 <div class="bg-base"></div><div class="bg-dots"></div><div class="bg-scanlines"></div>
-
 {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="flash-messages">{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
 
 <nav class="navbar">
@@ -22,6 +21,7 @@
 
 <div class="result-page">
   <div class="result-card">
+    <p style="font-family:var(--font-mono);font-size:11px;color:var(--vi-hi);margin-bottom:14px;letter-spacing:.1em">// MODULE 12 &amp; 13 — TRAINING &amp; EVALUATION</p>
 
     <div class="success-banner">
       <span class="sb-icon">✅</span>
@@ -62,5 +62,79 @@
   </div>
 </div>
 
+<div class="term-panel">
+  <div class="term-bar">
+    <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+    <span class="term-bar-title">notebook — {{ algorithm | replace('_',' ') }} · results</span>
+    <span class="term-module-badge">Module 12–14</span>
+  </div>
+  <div class="term-body">
 
+    <div class="term-cell-label">In [1] · train — {{ algorithm | replace('_',' ') }}</div>
+    <code class="term-code">{% if algorithm == 'logistic_regression' %}<span class="term-line" data-d="45"><span class="tk">from</span> <span class="tv">sklearn.linear_model</span> <span class="tk">import</span> LogisticRegression</span>
+<span class="term-line" data-d="55"><span class="tv">model</span> = <span class="tf">LogisticRegression</span>(max_iter=<span class="tn">1000</span>)</span>
+{% elif algorithm == 'random_forest' %}<span class="term-line" data-d="45"><span class="tk">from</span> <span class="tv">sklearn.ensemble</span> <span class="tk">import</span> RandomForestClassifier</span>
+<span class="term-line" data-d="55"><span class="tv">model</span> = <span class="tf">RandomForestClassifier</span>(n_estimators=<span class="tn">100</span>)</span>
+{% elif algorithm == 'linear_regression' %}<span class="term-line" data-d="45"><span class="tk">from</span> <span class="tv">sklearn.linear_model</span> <span class="tk">import</span> LinearRegression</span>
+<span class="term-line" data-d="55"><span class="tv">model</span> = <span class="tf">LinearRegression</span>()</span>
+{% elif algorithm == 'decision_tree' %}<span class="term-line" data-d="45"><span class="tk">from</span> <span class="tv">sklearn.tree</span> <span class="tk">import</span> DecisionTreeRegressor</span>
+<span class="term-line" data-d="55"><span class="tv">model</span> = <span class="tf">DecisionTreeRegressor</span>()</span>
+{% elif algorithm == 'kmeans' %}<span class="term-line" data-d="45"><span class="tk">from</span> <span class="tv">sklearn.cluster</span> <span class="tk">import</span> KMeans</span>
+<span class="term-line" data-d="55"><span class="tv">model</span> = <span class="tf">KMeans</span>(n_clusters=<span class="tn">3</span>, random_state=<span class="tn">42</span>, n_init=<span class="ts">'auto'</span>)</span>
+{% endif %}<span class="term-line" data-d="10"></span>
+{% if problem_type != 'clustering' %}<span class="term-line" data-d="45"><span class="tk">from</span> <span class="tv">sklearn.model_selection</span> <span class="tk">import</span> train_test_split</span>
+<span class="term-line" data-d="55"><span class="tv">X_train</span>, <span class="tv">X_test</span>, <span class="tv">y_train</span>, <span class="tv">y_test</span> = <span class="tf">train_test_split</span>(</span>
+<span class="term-line" data-d="50">    <span class="tv">X</span>, <span class="tv">y</span>, test_size=<span class="tn">0.2</span>, random_state=<span class="tn">42</span>)</span>
+<span class="term-line" data-d="55"><span class="tv">model</span>.<span class="tf">fit</span>(<span class="tv">X_train</span>, <span class="tv">y_train</span>)</span>
+{% else %}<span class="term-line" data-d="55"><span class="tv">model</span>.<span class="tf">fit</span>(<span class="tv">X</span>)  <span class="tc"># unsupervised</span></span>
+{% endif %}</code>
+
+    <div class="term-cell-label">In [2] · evaluate — your actual scores</div>
+    <code class="term-code">{% if problem_type == 'classification' %}<span class="term-line" data-d="45"><span class="tk">from</span> <span class="tv">sklearn.metrics</span> <span class="tk">import</span> accuracy_score</span>
+<span class="term-line" data-d="55"><span class="tv">y_pred</span> = <span class="tv">model</span>.<span class="tf">predict</span>(<span class="tv">X_test</span>)</span>
+<span class="term-line" data-d="55"><span class="tv">acc</span> = <span class="tf">accuracy_score</span>(<span class="tv">y_test</span>, <span class="tv">y_pred</span>)</span>
+<span class="term-line" data-d="50"><span class="tf">print</span>(<span class="ts">f'Accuracy: {acc:.4f}'</span>)</span>
+<span class="term-line" data-d="45"><span class="tc"># ↳ Your result: {{ metrics.accuracy }}</span></span>
+{% elif problem_type == 'regression' %}<span class="term-line" data-d="45"><span class="tk">from</span> <span class="tv">sklearn.metrics</span> <span class="tk">import</span> r2_score, mean_squared_error</span>
+<span class="term-line" data-d="40"><span class="tk">import</span> <span class="tv">numpy</span> <span class="tk">as</span> <span class="tv">np</span></span>
+<span class="term-line" data-d="55"><span class="tv">y_pred</span> = <span class="tv">model</span>.<span class="tf">predict</span>(<span class="tv">X_test</span>)</span>
+<span class="term-line" data-d="50"><span class="tf">print</span>(<span class="ts">f'R²:   {r2_score(y_test, y_pred):.4f}'</span>)</span>
+<span class="term-line" data-d="50"><span class="tf">print</span>(<span class="ts">f'RMSE: {np.sqrt(mean_squared_error(y_test, y_pred)):.4f}'</span>)</span>
+<span class="term-line" data-d="45"><span class="tc"># ↳ Your result — R²: {{ metrics.r2 }}, RMSE: {{ metrics.rmse }}</span></span>
+{% elif problem_type == 'clustering' %}<span class="term-line" data-d="45"><span class="tk">from</span> <span class="tv">sklearn.metrics</span> <span class="tk">import</span> silhouette_score</span>
+<span class="term-line" data-d="55"><span class="tv">score</span> = <span class="tf">silhouette_score</span>(<span class="tv">X</span>, <span class="tv">model</span>.labels_)</span>
+<span class="term-line" data-d="50"><span class="tf">print</span>(<span class="ts">f'Silhouette: {score:.4f}'</span>)</span>
+<span class="term-line" data-d="45"><span class="tc"># ↳ Your result: {{ metrics.silhouette }}</span></span>
+{% endif %}</code>
+
+    <div class="term-cell-label">In [3] · export — {{ algorithm }}_trained.pkl</div>
+    <code class="term-code"><span class="term-line" data-d="40"><span class="tk">import</span> <span class="tv">joblib</span></span>
+<span class="term-line" data-d="10"></span>
+<span class="term-line" data-d="60">joblib.<span class="tf">dump</span>(<span class="tv">model</span>, <span class="ts">'{{ algorithm }}_trained.pkl'</span>)</span>
+<span class="term-line" data-d="55"><span class="tf">print</span>(<span class="ts">'Saved: {{ algorithm }}_trained.pkl'</span>)</span>
+<span class="term-line" data-d="10"></span>
+<span class="term-line" data-d="40"><span class="tc"># Load it anywhere later:</span></span>
+<span class="term-line" data-d="55"><span class="tv">m</span> = joblib.<span class="tf">load</span>(<span class="ts">'{{ algorithm }}_trained.pkl'</span>)</span>
+</code>
+
+  </div>
+  <div class="term-foot">
+    <span class="term-foot-hint">{{ algorithm | replace('_',' ') }} · {{ problem_type }}{% if metrics.accuracy is defined %} · acc: {{ metrics.accuracy }}{% elif metrics.r2 is defined %} · R²: {{ metrics.r2 }}{% elif metrics.silhouette is defined %} · sil: {{ metrics.silhouette }}{% endif %}</span>
+    <span class="term-foot-run">executed</span>
+  </div>
+</div><script>
+(function(){
+  var lines = document.querySelectorAll('.term-line');
+  var delay = 0;
+  lines.forEach(function(ln){
+    var ms = parseInt(ln.dataset.d || 60);
+    setTimeout(function(){ ln.classList.add('visible'); }, delay);
+    delay += ms;
+  });
+  var blocks = document.querySelectorAll('.term-code');
+  if(blocks.length){ setTimeout(function(){ blocks[blocks.length-1].classList.add('typing'); }, delay+100); }
+  var body = document.querySelector('.term-body');
+  if(body){ var i=setInterval(function(){ body.scrollTop=body.scrollHeight; },80); setTimeout(function(){ clearInterval(i); },delay+1500); }
+})();
+</script>
 </body></html>

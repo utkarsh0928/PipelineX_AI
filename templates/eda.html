@@ -6,9 +6,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body class="has-terminal">
 <div class="bg-base"></div><div class="bg-dots"></div><div class="bg-scanlines"></div>
-
 {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="flash-messages">{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
 
 <nav class="navbar">
@@ -48,5 +47,76 @@
   </div>
 </div>
 
+<div class="term-panel">
+  <div class="term-bar">
+    <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+    <span class="term-bar-title">{{ filename }} — EDA visualizations</span>
+    <span class="term-module-badge">Module 5</span>
+  </div>
+  <div class="term-body">
 
+    <div class="term-cell-label">In [1] · setup</div>
+    <code class="term-code"><span class="term-line" data-d="40"><span class="tk">import</span> <span class="tv">matplotlib.pyplot</span> <span class="tk">as</span> <span class="tv">plt</span></span>
+<span class="term-line" data-d="40"><span class="tk">import</span> <span class="tv">seaborn</span> <span class="tk">as</span> <span class="tv">sns</span></span>
+<span class="term-line" data-d="50">plt.style.<span class="tf">use</span>(<span class="ts">'dark_background'</span>)</span>
+</code>
+
+{% if numeric_cols %}
+    <div class="term-cell-label">In [2] · histograms — {{ numeric_cols | length }} numeric column(s)</div>
+    <code class="term-code"><span class="term-line" data-d="45"><span class="tv">numeric_cols</span> = [</span>
+{% for col in numeric_cols %}<span class="term-line" data-d="40">    <span class="ts">'{{ col }}'</span>{% if not loop.last %},{% endif %}</span>
+{% endfor %}<span class="term-line" data-d="20">]</span>
+<span class="term-line" data-d="15"></span>
+<span class="term-line" data-d="50"><span class="tk">for</span> <span class="tv">col</span> <span class="tk">in</span> <span class="tv">numeric_cols</span>:</span>
+<span class="term-line" data-d="55">    sns.<span class="tf">histplot</span>(<span class="tv">df</span>[<span class="tv">col</span>].<span class="tf">dropna</span>(), kde=<span class="tk">True</span>)</span>
+<span class="term-line" data-d="50">    plt.<span class="tf">title</span>(<span class="ts">f'Distribution of {col}'</span>)</span>
+<span class="term-line" data-d="50">    plt.<span class="tf">show</span>()</span>
+</code>{% endif %}
+
+{% if cat_cols %}
+    <div class="term-cell-label">In [3] · bar charts — {{ cat_cols | length }} categorical column(s)</div>
+    <code class="term-code"><span class="term-line" data-d="45"><span class="tv">cat_cols</span> = [</span>
+{% for col in cat_cols %}<span class="term-line" data-d="40">    <span class="ts">'{{ col }}'</span>{% if not loop.last %},{% endif %}</span>
+{% endfor %}<span class="term-line" data-d="20">]</span>
+<span class="term-line" data-d="15"></span>
+<span class="term-line" data-d="50"><span class="tk">for</span> <span class="tv">col</span> <span class="tk">in</span> <span class="tv">cat_cols</span>:</span>
+<span class="term-line" data-d="55">    <span class="tv">counts</span> = <span class="tv">df</span>[<span class="tv">col</span>].<span class="tf">value_counts</span>().<span class="tf">head</span>(<span class="tn">10</span>)</span>
+<span class="term-line" data-d="55">    sns.<span class="tf">barplot</span>(x=<span class="tv">counts</span>.index, y=<span class="tv">counts</span>.values)</span>
+<span class="term-line" data-d="50">    plt.<span class="tf">show</span>()</span>
+</code>{% endif %}
+
+{% if numeric_cols | length > 1 %}
+    <div class="term-cell-label">In [4] · correlation heatmap — {{ numeric_cols | length }} features</div>
+    <code class="term-code"><span class="term-line" data-d="45"><span class="tv">corr</span> = <span class="tv">df</span>[[</span>
+{% for col in numeric_cols %}<span class="term-line" data-d="38">    <span class="ts">'{{ col }}'</span>{% if not loop.last %},{% endif %}</span>
+{% endfor %}<span class="term-line" data-d="30">]].<span class="tf">corr</span>()</span>
+<span class="term-line" data-d="15"></span>
+<span class="term-line" data-d="50">sns.<span class="tf">heatmap</span>(</span>
+<span class="term-line" data-d="45">    <span class="tv">corr</span>, annot=<span class="tk">True</span>,</span>
+<span class="term-line" data-d="45">    cmap=<span class="ts">'coolwarm'</span>, fmt=<span class="ts">'.2f'</span>,</span>
+<span class="term-line" data-d="45">    vmin=<span class="tn">-1</span>, vmax=<span class="tn">1</span></span>
+<span class="term-line" data-d="20">)</span>
+<span class="term-line" data-d="50">plt.<span class="tf">show</span>()</span>
+</code>{% endif %}
+
+  </div>
+  <div class="term-foot">
+    <span class="term-foot-hint">{{ filename }} · {{ numeric_cols | length }} numeric · {{ cat_cols | length }} categorical</span>
+    <span class="term-foot-run">executed</span>
+  </div>
+</div><script>
+(function(){
+  var lines = document.querySelectorAll('.term-line');
+  var delay = 0;
+  lines.forEach(function(ln){
+    var ms = parseInt(ln.dataset.d || 60);
+    setTimeout(function(){ ln.classList.add('visible'); }, delay);
+    delay += ms;
+  });
+  var blocks = document.querySelectorAll('.term-code');
+  if(blocks.length){ setTimeout(function(){ blocks[blocks.length-1].classList.add('typing'); }, delay+100); }
+  var body = document.querySelector('.term-body');
+  if(body){ var i=setInterval(function(){ body.scrollTop=body.scrollHeight; },80); setTimeout(function(){ clearInterval(i); },delay+1500); }
+})();
+</script>
 </body></html>

@@ -6,9 +6,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body class="has-terminal">
 <div class="bg-base"></div><div class="bg-dots"></div><div class="bg-scanlines"></div>
-
 {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="flash-messages">{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
 
 <nav class="navbar">
@@ -23,6 +22,7 @@
 
 <div class="page-wrapper">
   <div class="page-header">
+    <p class="section-label">// MODULE 9 — FEATURE ENGINEERING</p>
     <h1>Feature Engineering</h1>
     <p>apply_label_encoding() &nbsp;·&nbsp; apply_standard_scaling() &nbsp;·&nbsp; get_feature_info()</p>
   </div>
@@ -31,7 +31,7 @@
     <div class="fe-card">
       <span class="fc-icon">🏷️</span>
       <div class="fc-title">Label Encoding</div>
-      <div class="fc-desc">Converts categorical string columns to integers using <span style="font-family:var(--font-mono);color:var(--am);font-size:12px">LabelEncoder()</span>. Select the <strong style="color:var(--text-bright)">categorical</strong> columns to encode.</div>
+      <div class="fc-desc">Converts categorical string columns to integers using <span style="font-family:var(--font-mono);color:var(--vi-hi);font-size:12px">LabelEncoder()</span>. Select the <strong style="color:var(--text-bright)">categorical</strong> columns to encode.</div>
       <form method="POST" action="{{ url_for('feature_engineering') }}" id="encode-form">
         <input type="hidden" name="action" value="label_encode">
         {% if features.categorical %}
@@ -45,12 +45,12 @@
     <div class="fe-card">
       <span class="fc-icon">📐</span>
       <div class="fc-title">Standard Scaling</div>
-      <div class="fc-desc">Normalises numeric columns to Mean=0, Std=1 using <span style="font-family:var(--font-mono);color:var(--am);font-size:12px">StandardScaler()</span>. Select the <strong style="color:var(--text-bright)">numeric</strong> columns to scale.</div>
+      <div class="fc-desc">Normalises numeric columns to Mean=0, Std=1 using <span style="font-family:var(--font-mono);color:var(--vi-hi);font-size:12px">StandardScaler()</span>. Select the <strong style="color:var(--text-bright)">numeric</strong> columns to scale.</div>
       <form method="POST" action="{{ url_for('feature_engineering') }}" id="scale-form">
         <input type="hidden" name="action" value="scale">
         {% if features.numeric %}
         <div class="select-all-row"><input type="checkbox" id="sc-all" onchange="toggleAll('scale-form',this.checked)"><label for="sc-all">Select all</label></div>
-        <div class="col-list">{% for col in features.numeric %}<div class="col-item"><input type="checkbox" name="cols" value="{{ col }}" id="sc-{{ loop.index }}"><label for="sc-{{ loop.index }}">{{ col }}</label><span class="dtype-tag" style="color:var(--am);background:var(--am-dim);border-color:rgba(232,184,75,.2)">numeric</span></div>{% endfor %}</div>
+        <div class="col-list">{% for col in features.numeric %}<div class="col-item"><input type="checkbox" name="cols" value="{{ col }}" id="sc-{{ loop.index }}"><label for="sc-{{ loop.index }}">{{ col }}</label><span class="dtype-tag" style="color:var(--vi-hi);background:var(--vi-dim);border-color:rgba(139,92,246,.2)">numeric</span></div>{% endfor %}</div>
         {% else %}<div class="no-cols">✓ No numeric columns found.</div>{% endif %}
         <button type="submit" class="fe-btn fe-btn-purple" {% if not features.numeric %}disabled style="opacity:.5;cursor:not-allowed"{% endif %}>📐 Apply Standard Scaling</button>
       </form>
@@ -66,5 +66,65 @@
 
 <script>
 function toggleAll(fid,chk){document.getElementById(fid).querySelectorAll('input[type="checkbox"][name="cols"]').forEach(function(cb){cb.checked=chk;});}
+</script>
+
+<div class="term-panel">
+  <div class="term-bar">
+    <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+    <span class="term-bar-title">notebook — feature engineering</span>
+    <span class="term-module-badge">Module 9</span>
+  </div>
+  <div class="term-body">
+
+{% if features.categorical %}
+    <div class="term-cell-label">In [1] · label encode — {{ features.categorical | length }} categorical column(s)</div>
+    <code class="term-code"><span class="term-line" data-d="45"><span class="tk">from</span> <span class="tv">sklearn.preprocessing</span> <span class="tk">import</span> LabelEncoder</span>
+<span class="term-line" data-d="10"></span>
+<span class="term-line" data-d="40"><span class="tv">cat_cols</span> = [</span>
+{% for col in features.categorical %}<span class="term-line" data-d="38">    <span class="ts">'{{ col }}'</span>{% if not loop.last %},{% endif %}</span>
+{% endfor %}<span class="term-line" data-d="15">]</span>
+<span class="term-line" data-d="10"></span>
+<span class="term-line" data-d="50"><span class="tv">le</span> = <span class="tf">LabelEncoder</span>()</span>
+<span class="term-line" data-d="45"><span class="tk">for</span> <span class="tv">col</span> <span class="tk">in</span> <span class="tv">cat_cols</span>:</span>
+<span class="term-line" data-d="55">    <span class="tv">df</span>[<span class="tv">col</span>] = <span class="tv">le</span>.<span class="tf">fit_transform</span>(<span class="tv">df</span>[<span class="tv">col</span>].<span class="tf">astype</span>(<span class="ts">str</span>))</span>
+</code>{% endif %}
+
+{% if features.numeric %}
+    <div class="term-cell-label">In [2] · standard scale — {{ features.numeric | length }} numeric column(s)</div>
+    <code class="term-code"><span class="term-line" data-d="45"><span class="tk">from</span> <span class="tv">sklearn.preprocessing</span> <span class="tk">import</span> StandardScaler</span>
+<span class="term-line" data-d="10"></span>
+<span class="term-line" data-d="40"><span class="tv">num_cols</span> = [</span>
+{% for col in features.numeric %}<span class="term-line" data-d="38">    <span class="ts">'{{ col }}'</span>{% if not loop.last %},{% endif %}</span>
+{% endfor %}<span class="term-line" data-d="15">]</span>
+<span class="term-line" data-d="10"></span>
+<span class="term-line" data-d="55"><span class="tv">scaler</span> = <span class="tf">StandardScaler</span>()  <span class="tc"># z = (x - μ) / σ</span></span>
+<span class="term-line" data-d="60"><span class="tv">df</span>[<span class="tv">num_cols</span>] = <span class="tv">scaler</span>.<span class="tf">fit_transform</span>(<span class="tv">df</span>[<span class="tv">num_cols</span>])</span>
+</code>{% endif %}
+
+    <div class="term-cell-label">In [3] · verify</div>
+    <code class="term-code"><span class="term-line" data-d="50"><span class="tf">print</span>(<span class="ts">f'Shape: {df.shape}'</span>)</span>
+<span class="term-line" data-d="50"><span class="tf">print</span>(<span class="tv">df</span>.<span class="tf">dtypes</span>)</span>
+<span class="term-line" data-d="40"><span class="tc"># All columns should be numeric now</span></span>
+</code>
+
+  </div>
+  <div class="term-foot">
+    <span class="term-foot-hint">{{ features.categorical | length }} encoded · {{ features.numeric | length }} scaled</span>
+    <span class="term-foot-run">executed</span>
+  </div>
+</div><script>
+(function(){
+  var lines = document.querySelectorAll('.term-line');
+  var delay = 0;
+  lines.forEach(function(ln){
+    var ms = parseInt(ln.dataset.d || 60);
+    setTimeout(function(){ ln.classList.add('visible'); }, delay);
+    delay += ms;
+  });
+  var blocks = document.querySelectorAll('.term-code');
+  if(blocks.length){ setTimeout(function(){ blocks[blocks.length-1].classList.add('typing'); }, delay+100); }
+  var body = document.querySelector('.term-body');
+  if(body){ var i=setInterval(function(){ body.scrollTop=body.scrollHeight; },80); setTimeout(function(){ clearInterval(i); },delay+1500); }
+})();
 </script>
 </body></html>

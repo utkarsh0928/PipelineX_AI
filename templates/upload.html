@@ -6,9 +6,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body class="has-terminal">
 <div class="bg-base"></div><div class="bg-dots"></div><div class="bg-scanlines"></div>
-
 {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="flash-messages">{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
 
 <nav class="navbar">
@@ -21,9 +20,9 @@
 
 <div class="upload-wrapper">
   <div class="upload-card">
+    <p style="font-family:var(--font-mono);font-size:11px;color:var(--vi-hi);margin-bottom:14px;letter-spacing:.1em">// MODULE 2–3 — UPLOAD &amp; PARSE</p>
     <h2 class="upload-card-title">Upload Your Dataset</h2>
     <p class="upload-card-sub">load_dataframe(filepath) → pd.DataFrame</p>
-
     <form action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data" id="upload-form">
       <div class="dropzone" id="dropzone">
         <input type="file" name="dataset" id="file-input" accept=".csv,.xlsx,.xls,.json,.xml,.html,.htm">
@@ -50,5 +49,73 @@ fi.addEventListener("change",function(){if(fi.files[0]){fl.style.display="block"
 dz.addEventListener("dragover",function(e){e.preventDefault();dz.classList.add("dragover");});
 dz.addEventListener("dragleave",function(){dz.classList.remove("dragover");});
 dz.addEventListener("drop",function(e){e.preventDefault();dz.classList.remove("dragover");if(e.dataTransfer.files[0]){fi.files=e.dataTransfer.files;fl.style.display="block";fl.textContent="📄 "+e.dataTransfer.files[0].name;}});
+</script>
+
+<div class="term-panel">
+  <div class="term-bar">
+    <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+    <span class="term-bar-title">notebook.ipynb — upload &amp; parse</span>
+    <span class="term-module-badge">Module 2–3</span>
+  </div>
+  <div class="term-body">
+
+    <div class="term-cell-label">In [1] · install (Colab only)</div>
+    <code class="term-code"><span class="term-line" data-d="40"><span class="tc"># Skip if running locally in Jupyter</span></span>
+<span class="term-line" data-d="60"><span class="tk">!</span>pip install <span class="ts">pandas openpyxl lxml</span></span>
+</code>
+
+    <div class="term-cell-label">In [2] · imports</div>
+    <code class="term-code"><span class="term-line" data-d="55"><span class="tk">import</span> <span class="tv">pandas</span> <span class="tk">as</span> <span class="tv">pd</span></span>
+<span class="term-line" data-d="55"><span class="tk">import</span> <span class="tv">numpy</span> <span class="tk">as</span> <span class="tv">np</span></span>
+<span class="term-line" data-d="55"><span class="tk">import</span> <span class="tv">matplotlib.pyplot</span> <span class="tk">as</span> <span class="tv">plt</span></span>
+<span class="term-line" data-d="55"><span class="tk">import</span> <span class="tv">seaborn</span> <span class="tk">as</span> <span class="tv">sns</span></span>
+<span class="term-line" data-d="55"><span class="tk">from</span> <span class="tv">sklearn.preprocessing</span> <span class="tk">import</span> LabelEncoder, StandardScaler</span>
+<span class="term-line" data-d="55"><span class="tk">from</span> <span class="tv">sklearn.model_selection</span> <span class="tk">import</span> train_test_split</span>
+<span class="term-line" data-d="55"><span class="tk">import</span> <span class="tv">joblib</span></span>
+</code>
+
+    <div class="term-cell-label">In [3] · load your dataset</div>
+    <code class="term-code"><span class="term-line" data-d="60"><span class="tc"># Upload your file to Colab first, then:</span></span>
+<span class="term-line" data-d="70"><span class="tv">df</span> = pd.<span class="tf">read_csv</span>(<span class="ts">'your_file.csv'</span>)</span>
+<span class="term-line" data-d="20"></span>
+<span class="term-line" data-d="50"><span class="tc"># Or for other formats:</span></span>
+<span class="term-line" data-d="50"><span class="tc"># df = pd.read_excel('file.xlsx')</span></span>
+<span class="term-line" data-d="50"><span class="tc"># df = pd.read_json('file.json')</span></span>
+<span class="term-line" data-d="50"><span class="tc"># df = pd.read_xml('file.xml')</span></span>
+<span class="term-line" data-d="50"><span class="tc"># df = pd.read_html('file.html')[0]</span></span>
+<span class="term-line" data-d="20"></span>
+<span class="term-line" data-d="60"><span class="tf">print</span>(<span class="tv">df</span>.shape)</span>
+</code>
+
+  </div>
+  <div class="term-foot">
+    <span class="term-foot-hint">Copy → paste into Jupyter or Colab</span>
+    <span class="term-foot-run">ready</span>
+  </div>
+</div><script>
+(function(){
+  var lines = document.querySelectorAll('.term-line');
+  var delay = 0;
+  lines.forEach(function(ln){
+    var ms = parseInt(ln.dataset.d || 60);
+    setTimeout(function(){ ln.classList.add('visible'); }, delay);
+    delay += ms;
+  });
+  // blinking cursor on last code block
+  var blocks = document.querySelectorAll('.term-code');
+  if(blocks.length){
+    var last = blocks[blocks.length-1];
+    setTimeout(function(){ last.classList.add('typing'); }, delay + 100);
+  }
+  // auto-scroll terminal body as lines appear
+  var body = document.querySelector('.term-body');
+  if(body){
+    setInterval(function(){ body.scrollTop = body.scrollHeight; }, 200);
+    setTimeout(function(){
+      var i = setInterval(function(){ body.scrollTop = body.scrollHeight; },80);
+      setTimeout(function(){ clearInterval(i); }, delay + 1200);
+    },0);
+  }
+})();
 </script>
 </body></html>
